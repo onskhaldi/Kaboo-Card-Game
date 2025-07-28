@@ -14,8 +14,6 @@ class CardTest {
         assertEquals("♥7", card.toString())
     }
 
-
-
     @Test
     fun testCardEquality() {
         val card1 = Card(CardSuit.SPADES, CardValue.KING, false)
