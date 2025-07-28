@@ -3,5 +3,6 @@ enum class GamePhase {
 DISCARD,
     DRAW,
     PALAYQUEEN,
-    SWAP
+    SWAP,
+
 }
