@@ -1,9 +1,22 @@
 package entity
 
 import kotlin.test.*
+/**
+ * Tests für die [KabooGame]-Klasse.
+ */
 
 class KabooGameTest {
 
+    /**
+     * Testet die Initialisierung des Spiels.
+     *
+     * Überprüft:
+     * - Spieler 1 und Spieler 2 sind korrekt gesetzt
+     * - currentPlayer ist korrekt initialisiert
+     * - state ist null
+     * - selected, drawPile, playStack und log sind leer
+     * - lastRound ist false
+     */
     @Test
     fun testKabooGameInitialization() {
         val player1 = Player("Alice")
@@ -25,7 +38,15 @@ class KabooGameTest {
         assertFalse(game.lastRound)
         assertTrue(game.log.isEmpty())
     }
-
+    /**
+     * Testet das Mutieren der Spielzustands-Properties.
+     *
+     * Überprüft:
+     * - Änderung des GamePhase-Zustands
+     * - Hinzufügen einer Karte zur Auswahl
+     * - Hinzufügen zur Ziehstapel-Liste
+     * - Eintrag ins Spiel-Log
+     */
     @Test
     fun testMutableGameProperties() {
         val player1 = Player("Alice")
@@ -50,7 +71,13 @@ class KabooGameTest {
         game.log.add("Spiel gestartet.")
         assertEquals("Spiel gestartet.", game.log.first())
     }
-
+    /**
+     * Testet die Kopierbarkeit eines Spiels mit `copy()`.
+     *
+     * Überprüft:
+     * - Spieler 1 und 2 sowie currentPlayer sind im neuen Objekt identisch
+     * - `game1` und `game2` sind nicht dasselbe Objekt (Referenzvergleich)
+     */
     @Test
     fun testGameEquality() {
         val player1 = Player("Alice")
