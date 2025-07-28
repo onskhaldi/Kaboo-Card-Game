@@ -39,3 +39,4 @@ class CardTest {
         assertTrue(card.isPowercard)
     }
 }
+
