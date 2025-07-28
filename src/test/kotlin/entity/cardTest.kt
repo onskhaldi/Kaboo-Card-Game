@@ -15,6 +15,7 @@ class CardTest {
     }
 
 
+
     @Test
     fun testCardEquality() {
         val card1 = Card(CardSuit.SPADES, CardValue.KING, false)
