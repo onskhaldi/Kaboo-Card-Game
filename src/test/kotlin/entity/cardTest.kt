@@ -10,7 +10,7 @@ class CardTest {
      *
      * Überprüft:
      * - Farbe (suit), Wert (value) und Powercard-Flag
-     * - korrekte String-Darstellung, z. B. "♥7"
+     * - korrekte String-Darstellung, z.B. "♥7"
      */
     @Test
     fun testCardInitializationAndToString() {
@@ -21,6 +21,7 @@ class CardTest {
         assertTrue(card.isPowercard)
         assertEquals("♥7", card.toString())
     }
+
 
     /**
      * Testet Gleichheit von Karten.
