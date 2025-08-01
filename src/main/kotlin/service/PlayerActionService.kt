@@ -1,16 +1,24 @@
 package service
 import entity.*
 /**
- * Service layer class that provides the logic for the possible actions a player can take in the game
+ * Service layer class that provides the logic for the two possible actions a player
+ * can take in War: drawing from the left stack or drawing from right stack.
  *
  * @param rootService The [RootService] instance to access the other service methods and entity layer
  */
+
 class PlayerActionService (private val rootService: RootService) : AbstractRefreshingService() {
+    /**
+     * Returns the currently active player.
+     */
     fun currentPlayer(): Player {
         val game = checkNotNull(rootService.currentGame) { "Kein Spiel aktiv." }
         return if (game.currentPlayer == 0) game.player1 else game.player2
     }
-
+    /**
+     * Executes the logic for playing a power card depending on its type.
+     * Updates game state and logs the action.
+     */
     fun playPowerCard() {
         val game = rootService.currentGame
         checkNotNull(game)
@@ -58,7 +66,9 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
         if (card != null) {
             game.playStack.push(card) }
         onAllRefreshables { refreshAfterPlayPower() } }
-
+    /**
+     * Executes a card swap, either with own field or with opponent based on the current phase.
+     */
         fun swapCard() {
         val game = rootService.currentGame
         checkNotNull(game)
@@ -77,7 +87,9 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
                 else -> throw IllegalStateException("In Phase ${game.state} darf nicht getauscht werden.")
         }
     }
-
+    /**
+     * Internal logic for swapping cards between two players (for QUEEN and JACK powercards).
+     */
       private fun swapCardsInternal(game: KabooGame, player: Player, gegner: Player) {
         require(game.state == GamePhase.PLAY_QUEEN || game.state == GamePhase.PLAY_JACK) {
             "Karten dürfen nur mit Dame oder Bube getauscht werden."
@@ -112,7 +124,9 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
         game.state = GamePhase.ENDTURN
         rootService.gameService.endTurn()
     }
-
+    /**
+     * Swaps a drawn card with a selected card from the player's own hand.
+     */
     private fun swapWithOwnField(game: KabooGame, player: Player) {
         require(
             game.state == GamePhase.POWERCARD_DRAWN ||
@@ -137,7 +151,10 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
         game.state = GamePhase.ENDTURN
         rootService.gameService.endTurn()
     }
-
+    /**
+     * Handles drawing a card from the draw pile.
+     * If it's a powercard, transitions to the respective state.
+     */
        fun drawFromDeck() {
         val game = rootService.currentGame
         checkNotNull(game)
@@ -172,8 +189,9 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
 
         onAllRefreshables { refreshAfterDraw() }
     }
-
-
+    /**
+     * Handles drawing the top card from the play/discard pile.
+     */
     fun drawFromPile() {
         val game = rootService.currentGame
         checkNotNull(game)
@@ -190,7 +208,10 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
         game.log.add("${currentPlayer().name} hat die oberste Karte vom Ablagestapel gezogen: ${topCard.value}.")
         onAllRefreshables { refreshAfterDraw() }
     }
-
+    /**
+     * Selects a card depending on the current game phase and the player.
+     * Enforces valid selection rules.
+     */
     fun selectCard(card: Card) {
         val game = rootService.currentGame
         checkNotNull(game) { "Kein aktives Spiel vorhanden." }
@@ -237,7 +258,10 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
         game.log.add("${player.name} hat eine Karte ausgewählt: ${card.value}.")
         onAllRefreshables { refreshAfterSelect() }
     }
-
+    /**
+     * Confirms the current action depending on game phase.
+     * May lead to showing, swapping, or ending the turn.
+     */
     fun confirmChoice()
     {
         val game = rootService.currentGame!!
@@ -307,7 +331,9 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
         }
     }
 
-
+    /**
+     * Finds the (row, column) of a given card in the player’s hand.
+     */
     fun findCardPositionInHand(player: Player, card: Card): Pair<Int, Int>? {
         for (i in 0..1) {
             for (j in 0..1) {
@@ -316,21 +342,27 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
         }
         return null
     }
+    /**
+     * Executes JACK effect: blind swap of cards between players.
+     */
     private  fun playJackEffect() {
         val game = rootService.currentGame!!
         game.log.add("${currentPlayer().name} hat mit Bube blind eine Karte getauscht.")
         swapCard()
 
     }
-
+    /**
+     * Executes QUEEN card effect: show 2 cards (own and opponent), then confirm swap.
+     */
     private fun confirmQueenShow(cardA: Card, cardB: Card) {
         val game = rootService.currentGame!!
         rootService.gameService.showCards(cardA, cardB)
         game.state = GamePhase.confirmQueenShow
 
     }
-
-
+    /**
+     * Finalizes the QUEEN swap after the cards have been viewed.
+     */
     fun confirmQueenSwap() {
         val game = rootService.currentGame!!
         require(game.state==GamePhase.confirmQueenShow) {
@@ -350,23 +382,28 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
         swapCard()
 
     }
-
-
+    /**
+     * Executes SEVEN or EIGHT effect: reveals a selected own card.
+     */
     private fun playSevenOrEightEffect(card: Card) {
         val game = rootService.currentGame
         checkNotNull(game) {"Kein aktives Spiel vorhanden."}
         rootService.gameService.showCards(card)
 
     }
-
-
+    /**
+     * Executes NINE or TEN effect: reveals a selected opponent's card.
+     */
     private fun playNineOrTenEffect(card: Card)  {
         val game = rootService.currentGame
         checkNotNull(game) {"Kein aktives Spiel vorhanden."}
         rootService.gameService.showCards(card)
 
     }
-
+    /**
+     * Triggers a knock to initiate the final round of the game.
+     * Allowed only once before last round.
+     */
    fun knock() {
         val game = rootService.currentGame
         checkNotNull(game) { "No game is currently active" }

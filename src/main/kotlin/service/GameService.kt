@@ -2,8 +2,23 @@ package service
 import kotlin.random.Random
 import entity.*
 import java.util.Stack
+/**
+ * Service layer class that provides the logic for actions not directly
+ * related to a single player.
+ *
+ * @param rootService The [RootService] instance to access the other service methods and entity layer
+ */
 
 class GameService (private val rootService: RootService): AbstractRefreshingService() {
+    /**
+     * Startet ein neues Spiel mit den übergebenen Spielernamen.
+     * Initialisiert Spieler, Kartenstapel und Spielfeld.
+     *
+     * @param p1Name Name von Spieler 1
+     * @param p2Name Name von Spieler 2
+     * @throws IllegalArgumentException wenn bereits ein Spiel läuft oder Spielernamen ungültig sind
+     */
+
     fun startNewGame(p1Name: String, p2Name: String) {
         require(rootService.currentGame == null) {
             "IllegalInitialized: Es läuft bereits ein Spiel."
@@ -36,8 +51,14 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
         }
     }
 
-
-
+    /**
+     * Fügt einen Spieler zum aktuellen Spiel hinzu.
+     * Nur erlaubt in den Phasen INITIALIZED oder PLAYER_ADDITION.
+     *
+     * @param name Spielername (nicht leer)
+     * @throws IllegalStateException wenn bereits zwei Spieler existieren
+     * @throws IllegalArgumentException wenn Spielphase oder Name ungültig sind
+     */
     fun addPlayer(name: String) {
         val game = rootService.currentGame
         checkNotNull(game) { "No game is currently active" }
@@ -63,6 +84,13 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
         game.log.add("Spieler $name wurde hinzugefügt.")
         onAllRefreshables { refreshAfterPlayerEdit() }
     }
+
+
+    /**
+     * Zeigt die unteren Karten eines Spielers zu Beginn des Spiels.
+     * Ändert den Zustand zu SHOW_STARTING_HANDS_1 oder SHOW_STARTING_HANDS_2.
+     */
+
     fun showStartingCards() {
         val game = rootService.currentGame ?: return
 
@@ -77,6 +105,10 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
                 revealBottomCards(game, rootService.playerActionService.currentPlayer())
             }
             else -> return } }
+    /**
+     * Versteckt die Karten nach dem Anfangszeigen.
+     * Setzt Spielphase auf REVEAL oder READYTODRAW.
+     */
 
     fun hideStartingCards() {
         val game = rootService.currentGame ?: return
@@ -100,7 +132,13 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
         onAllRefreshables { refreshAfterHideCards() }
     }
 
-
+    /**
+     * Deckt die beiden unteren Karten eines Spielers auf.
+     * Wird intern von showStartingCards() genutzt.
+     *
+     * @param game Das aktuelle Spiel
+     * @param player Der Spieler, dessen Karten gezeigt werden
+     */
 
     private  fun revealBottomCards(game: KabooGame, player: Player) {
         val bottomCards = listOf(player.hand[1][0], player.hand[1][1])
@@ -113,7 +151,12 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
         onAllRefreshables { refreshAfterShowCards(bottomCards[0]!!, bottomCards[1]!!) }
     }
 
-
+    /**
+     * Versteckt aufgedeckte Karten während spezieller Spielphasen
+     * Beendet ggf. den Zug.
+     *
+     * @throws IllegalStateException wenn die Phase ungültig ist
+     */
     fun hideCards() {
         val game = rootService.currentGame
         checkNotNull(game) { "No game is currently active." }
@@ -132,6 +175,14 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
         game.state = GamePhase.ENDTURN
         endTurn()
     }
+
+    /**
+     * Zeigt eine oder zwei Karten im Rahmen der Queen-/Seven/Eight-/Ten-Phasen.
+     *
+     * @param card1 erste Karte zum Aufdecken
+     * @param card2 optionale zweite Karte
+     * @throws IllegalStateException wenn falsche Spielphase
+     */
 
     fun showCards(card1: Card, card2: Card? = null) {
 
@@ -156,8 +207,16 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
         game.state = GamePhase.SHOW_CARDS
         onAllRefreshables { refreshAfterShowCards(card1,card2) }
     }
+    /**
+     * Legt die gezogene Karte auf den Ablagestapel.
+     * Erlaubt nur in den Phasen POWERCARD_DRAWN oder PUNKTCARD_DRAWN.
+     * Ruft anschließend endTurn() auf.
+     *
+     * @throws IllegalStateException bei falscher Phase
+     * @throws NullPointerException wenn keine gezogene Karte vorhanden ist
+     */
 
-        fun discardCard() {
+       fun discardCard() {
         val game = rootService.currentGame
         checkNotNull(game) { "Kein aktives Spiel vorhanden." }
         require(game.state == GamePhase.POWERCARD_DRAWN || game.state == GamePhase.PUNKTCARD_DRAWN) {
@@ -171,6 +230,11 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
            game.state = GamePhase.ENDTURN
         endTurn()
     }
+    /**
+     * Startet den Zug des aktuellen Spielers.
+     * Nur erlaubt in Phase READYTODRAW.
+     */
+
        fun startTurn() {
         val game = rootService.currentGame
         checkNotNull(game) { "No game is currently active" }
@@ -183,7 +247,10 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
     }
 
 
-
+    /**
+     * Beendet den aktuellen Spielzug und setzt ggf. das Spiel in den Endzustand.
+     * Kümmert sich um Spielerwechsel, Knock-Logik, und ruft ggf. gameOver() auf.
+     */
 
   fun endTurn() {
       val game = rootService.currentGame
@@ -220,6 +287,12 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
       onAllRefreshables { refreshAfterTurnEnd() }
   }
 
+    /**
+     * Erstellt und mischt ein vollständiges 52-Karten-Deck.
+     * Powerkarten werden entsprechend gekennzeichnet.
+     *
+     * @return Gemischter Kartenstapel als Stack
+     */
     private fun createDrawStack():Stack<Card> {
         val allCards = CardSuit.values().flatMap { suit ->
             CardValue.values().map { value ->
@@ -239,7 +312,12 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
         allCards.forEach { stack.push(it) }
         return stack
     }
-
+    /**
+     * Verteilt an jeden Spieler 2×2 Karten aus dem Deck.
+     *
+     * @param deck Der gemischte Kartenstapel
+     * @param game Das aktuelle Spiel
+     */
     private fun distributeCards(deck: Stack<Card>, game: KabooGame) {
         val players = listOf(game.player1, game.player2)
         for (player in players) {
@@ -250,6 +328,14 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
             }
         }
     }
+
+
+    /**
+     * Berechnet den Gesamtpunktestand eines Spielers basierend auf seiner Hand.
+     *
+     * @param player Der Spieler
+     * @return Gesamtpunktzahl des Spielers
+     */
     private fun scoreOf(player: Player): Int {
         return player.hand.flatten().filterNotNull().sumOf { card ->
             when (card.value) {
@@ -261,6 +347,12 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
         }
     }
 
+    /**
+     * Führt das Spielende durch: berechnet Punkte, bestimmt Gewinner
+     * und benachrichtigt die GUI über das Ergebnis.
+     *
+     * @throws IllegalStateException wenn falscher Zustand oder Spiel nicht in letzter Runde ist
+     */
     fun gameOver() {
         val game = rootService.currentGame ?: throw IllegalStateException("Kein aktives Spiel vorhanden.")
         if (game.state != GamePhase.ENDTURN) {
