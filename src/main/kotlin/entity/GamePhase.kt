@@ -17,4 +17,3 @@ enum class GamePhase {
     ENDTURN,
     confirmQueenShow,PLAYER_ADDITION,PLAYERS_ADDED
 }
-

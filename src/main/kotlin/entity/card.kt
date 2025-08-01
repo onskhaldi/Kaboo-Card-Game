@@ -1,5 +1,4 @@
 package entity
-
 /**
  * Data class for the single typ of game elements that the game "Kombi-Duell" knows: cards
  *

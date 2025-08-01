@@ -3,7 +3,6 @@ import kotlin.random.Random
 import entity.*
 import java.util.Stack
 
-
 class GameService (private val rootService: RootService): AbstractRefreshingService() {
     fun startNewGame(p1Name: String, p2Name: String) {
         require(rootService.currentGame == null) {
@@ -293,5 +292,6 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
             }
         } }
 }
+
 
 

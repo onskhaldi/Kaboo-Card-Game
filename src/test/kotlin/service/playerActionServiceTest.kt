@@ -1030,7 +1030,6 @@ class PlayerActionServiceTest {
         assertEquals(GamePhase.READYTODRAW, game.state)
     }
 
-
 }
 
 

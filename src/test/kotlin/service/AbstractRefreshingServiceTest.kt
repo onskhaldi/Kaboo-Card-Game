@@ -28,7 +28,6 @@ class AbstractRefreshingServiceTest {
         abstractRefreshingService = object : AbstractRefreshingService() {}
         abstractRefreshingService.addRefreshable(testRefreshable)
     }
-
     /**
      * Tests if the refreshable is notified and is the correct one.
      */

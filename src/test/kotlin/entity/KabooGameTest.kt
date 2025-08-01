@@ -54,8 +54,8 @@ class KabooGameTest {
         val game = KabooGame(player1, player2, 1)
 
         // state ändern
-        game.state = GamePhase.DRAW
-        assertEquals(GamePhase.DRAW, game.state)
+        game.state = GamePhase.DRAW_FROM_PILE
+        assertEquals(GamePhase.DRAW_FROM_PILE, game.state)
 
         // Karten zur Selektion hinzufügen
         val card = Card(CardSuit.HEARTS, CardValue.SEVEN, true)
