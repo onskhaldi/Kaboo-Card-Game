@@ -120,5 +120,4 @@ class TestRefreshable: Refreshable {
         lastCard2Shown = null
     }
 
-
 }

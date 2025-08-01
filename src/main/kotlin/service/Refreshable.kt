@@ -34,3 +34,4 @@ interface Refreshable {
     fun refreshAfterQuit() {}
     fun refreshAfterRestart(){}
 }
+

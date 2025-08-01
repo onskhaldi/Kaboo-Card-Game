@@ -742,8 +742,8 @@ class GameServiceTest {
         assertTrue(game.log.any { it.contains("Bob hat 39 Punkte") })
     }
 
-
 }
+
 
 
 
