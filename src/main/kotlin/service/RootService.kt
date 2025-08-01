@@ -7,7 +7,6 @@ import entity.KabooGame
  * services to access.
  */
 class RootService {
-
     val gameService = GameService(this)
     var playerActionService = PlayerActionService(this)
 

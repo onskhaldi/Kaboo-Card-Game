@@ -365,7 +365,6 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
         checkNotNull(game) {"Kein aktives Spiel vorhanden."}
         rootService.gameService.showCards(card)
 
-
     }
 
    fun knock() {

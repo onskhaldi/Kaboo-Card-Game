@@ -16,4 +16,3 @@ data class KabooGame (
     var knockInitiatorIndex: Int? = null
 
 }
-

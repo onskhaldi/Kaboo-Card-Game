@@ -12,7 +12,6 @@ import entity.Player
  *
  * @see AbstractRefreshingService
  */
-
 interface Refreshable {
     fun refreshAfterpass(){}
     fun refreshAfterGameStart(){}
