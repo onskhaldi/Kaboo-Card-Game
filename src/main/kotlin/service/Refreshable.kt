@@ -13,13 +13,16 @@ import entity.Player
  * @see AbstractRefreshingService
  */
 interface Refreshable {
+    fun refreshAfterShowStartingCards(){}
+    fun refreshAfterHideStartingCards(){}
+    fun refreshAfterDrawPile(){}
+    fun refreshAfterStartNewGame(){}
     fun refreshAfterpass(){}
-    fun refreshAfterGameStart(){}
     fun refreshAfterShowCards(card1: Card, card2: Card?){}
     fun refreshAfterPlayPower(){}
     fun refreshAfterKnock(){}
     fun refreshAfterTurnEnd(){}
-    fun refreshAfterDraw(){}
+    fun refreshAfterDrawDeck(){}
     fun refreshAfterSelect(){}
     fun refreshAfterSwap(){}
     fun refreshAfterConfirmSwap() {}

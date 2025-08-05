@@ -2,8 +2,7 @@ package entity
 
 
 enum class GamePhase {
-    DISCARD,
-    KNOCKED,
+     KNOCKED,
     READYTODRAW,
     FINISHED,
     INITIALIZED,

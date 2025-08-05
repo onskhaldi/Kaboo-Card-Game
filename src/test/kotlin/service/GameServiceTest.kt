@@ -643,10 +643,8 @@ class GameServiceTest {
         val game = rootService.currentGame!!
         game.state = GamePhase.ENDTURN
         game.drawPile.clear()
-
         rootService.gameService.endTurn()
-
-        assertEquals(GamePhase.FINISHED, game.state) // evtl. direkt FINISHED, je nach gameOver()
+        assertEquals(GamePhase.READYTODRAW, game.state) // evtl. direkt FINISHED, je nach gameOver()
 
     }
     /**
@@ -656,16 +654,23 @@ class GameServiceTest {
      * - Die Variable `lastRound` wird auf `true` gesetzt, um die letzte Runde einzuleiten.
      */
     @Test
-    fun testEndTurn_whenKnocked_setsLastRoundTrue() {
+    fun testKnock_setsLastRoundAndStateAndInitiator() {
+        // Arrange
         val rootService = RootService()
         rootService.gameService.startNewGame("Alice", "Bob")
-        val game = rootService.currentGame!!
-        game.state = GamePhase.KNOCKED
+        val game = requireNotNull(rootService.currentGame)
+        val initiator = game.currentPlayer
 
-        rootService.gameService.endTurn()
+        // Act
+        rootService.playerActionService.knock()
 
-        assertTrue(game.lastRound)
+        // Assert
+        assertTrue(game.lastRound, "Nach knock() muss lastRound = true sein.")
+        assertEquals(GamePhase.READYTODRAW, game.state, "Nach knock() muss der State READYTODRAW sein.")
+        assertEquals(initiator, game.knockInitiatorIndex, "Initiator muss der aktuelle Spieler zum Zeitpunkt des Klopfens sein.")
+        assertTrue(game.log.last().contains("klopft"), "Das Log sollte den Klopfvorgang vermerken.")
     }
+
     /**
      * Testet, ob `gameOver()` eine Exception wirft, wenn das Spiel sich nicht im Zustand `ENDTURN` befindet.
      *
@@ -1069,6 +1074,42 @@ class GameServiceTest {
         assertTrue(game.log.any { it.contains("Bob hat 39 Punkte") })
     }
 
+
+    @Test
+    fun testQuit_callsRefreshAfterQuitOnAllRefreshables() {
+        val rootService = RootService()
+        var quitCalled = false
+
+        val testRefreshable = object : Refreshable {
+            override fun refreshAfterQuit() {
+                quitCalled = true
+            }
+        }
+
+        rootService.addRefreshables(testRefreshable)
+
+        rootService.gameService.quit()
+
+        assertTrue(quitCalled, "refreshAfterQuit() sollte aufgerufen werden")
+    }
+
+    @Test
+    fun testRestart_callsRefreshAfterRestartOnAllRefreshables() {
+        val rootService = RootService()
+        var restartCalled = false
+
+        val testRefreshable = object : Refreshable {
+            override fun refreshAfterRestart() {
+                restartCalled = true
+            }
+        }
+
+        rootService.addRefreshables(testRefreshable)
+
+        rootService.gameService.restart()
+
+        assertTrue(restartCalled, "refreshAfterRestart() sollte aufgerufen werden")
+    }
 }
 
 

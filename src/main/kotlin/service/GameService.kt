@@ -47,7 +47,7 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
         game.log.add("Neues Spiel gestartet. ${rootService.playerActionService.currentPlayer().name} beginnt.")
 
         onAllRefreshables {
-            refreshAfterGameStart()
+            refreshAfterStartNewGame()
         }
     }
 
@@ -93,6 +93,7 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
 
     fun showStartingCards() {
         val game = rootService.currentGame ?: return
+        game.showStartingCards = true
 
         when (game.state) {
             GamePhase.PLAYERS_ADDED -> {
@@ -104,7 +105,10 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
                 game.log.add("${rootService.playerActionService.currentPlayer().name} sieht seine Startkarten.")
                 revealBottomCards(game, rootService.playerActionService.currentPlayer())
             }
-            else -> return } }
+            else -> return }
+    }
+
+
     /**
      * Versteckt die Karten nach dem Anfangszeigen.
      * Setzt Spielphase auf REVEAL oder READYTODRAW.
@@ -112,6 +116,7 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
 
     fun hideStartingCards() {
         val game = rootService.currentGame ?: return
+        game.showStartingCards = false
 
         when (game.state) {
             GamePhase.SHOW_STARTING_HANDS_1 -> {
@@ -129,7 +134,7 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
             }
             else -> return
         }
-        onAllRefreshables { refreshAfterHideCards() }
+        onAllRefreshables {refreshAfterHideStartingCards()}
     }
 
     /**
@@ -140,18 +145,24 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
      * @param player Der Spieler, dessen Karten gezeigt werden
      */
 
+
     private  fun revealBottomCards(game: KabooGame, player: Player) {
-        val bottomCards = listOf(player.hand[1][0], player.hand[1][1])
+        player.startingCards = mutableListOf(player.hand[1][0]!!, player.hand[1][1]!!)
+
         if (game.state==GamePhase.PLAYERS_ADDED) {
             game.state = GamePhase.SHOW_STARTING_HANDS_1
         }
         else if (game.state==GamePhase.REVEAL){
             game.state = GamePhase.SHOW_STARTING_HANDS_2
         }
-        onAllRefreshables { refreshAfterShowCards(bottomCards[0]!!, bottomCards[1]!!) }
+        onAllRefreshables {
+            refreshAfterShowStartingCards()
+        }
     }
 
-    /**
+
+
+        /**
      * Versteckt aufgedeckte Karten während spezieller Spielphasen
      * Beendet ggf. den Zug.
      *
@@ -184,7 +195,7 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
      * @throws IllegalStateException wenn falsche Spielphase
      */
 
-    fun showCards(card1: Card, card2: Card? = null) {
+    /*fun showCards(card1: Card, card2: Card? = null) {
 
         val game = rootService.currentGame
         checkNotNull(game) { "No game is currently active." }
@@ -206,7 +217,39 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
         game.log.add("${currentPlayer.name} sieht ${card1.value}$card2Info.")
         game.state = GamePhase.SHOW_CARDS
         onAllRefreshables { refreshAfterShowCards(card1,card2) }
+    }*/
+
+
+
+    fun showCards(card1: Card, card2: Card? = null) {
+        val game = rootService.currentGame
+        checkNotNull(game) { "No game is currently active." }
+        require(game.state in listOf(
+            GamePhase.PLAY_QUEEN,
+            GamePhase.PLAY_SEVEN_OR_EIGHT,
+            GamePhase.PLAY_NINE_OR_TEN
+        )) {
+            "Karten dürfen nur bei bestimmten Powerkarten gezeigt werden. Aktuelle Phase: ${game.state}"
+        }
+
+        card1.isRevealed = true
+
+
+        if (card2 != null) {
+            card2.isRevealed = true
+
+        }
+
+        val currentPlayer = if (game.currentPlayer == 0) game.player1 else game.player2
+        val card2Info = card2?.let { " und ${it.value}" } ?: ""
+        game.log.add("${currentPlayer.name} sieht ${card1.value}$card2Info.")
+        game.state = GamePhase.SHOW_CARDS
+
+        onAllRefreshables { refreshAfterShowCards(card1, card2) }
     }
+
+
+
     /**
      * Legt die gezogene Karte auf den Ablagestapel.
      * Erlaubt nur in den Phasen POWERCARD_DRAWN oder PUNKTCARD_DRAWN.
@@ -269,14 +312,10 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
           game.log.add("Der Nachziehstapel ist leer. Das Spiel endet sofort.")
           gameOver()  }
 
-      if (game.state == GamePhase.KNOCKED) {
-          game.lastRound = true
-      }
-      if (game.lastRound && game.currentPlayer != game.knockInitiatorIndex) {
-          game.state = GamePhase.ENDTURN
-          gameOver()
-          return
-
+        if (game.lastRound && game.currentPlayer == game.knockInitiatorIndex) {
+            game.log.add("Letzter Zug des Klopfenden. Spiel endet.")
+            gameOver()
+            return
 
   }
       game.currentPlayer = 1 - game.currentPlayer
@@ -284,7 +323,8 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
       game.selected.clear()
       game.log.add("Zug beendet. Jetzt ist $rootService.playerActionService.currentPlayer().name} am Zug.")
       game.state= GamePhase.READYTODRAW
-      onAllRefreshables { refreshAfterTurnEnd() }
+
+        onAllRefreshables { refreshAfterTurnEnd() }
   }
 
     /**
@@ -336,7 +376,7 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
      * @param player Der Spieler
      * @return Gesamtpunktzahl des Spielers
      */
-    private fun scoreOf(player: Player): Int {
+ fun scoreOf(player: Player): Int {
         return player.hand.flatten().filterNotNull().sumOf { card ->
             when (card.value) {
                 CardValue.KING -> -1
@@ -382,8 +422,19 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
                     refreshAfterGameOver(gegner, scorePlayer2)
                 }
             }
+
         } }
+
+
+    fun quit() {
+        onAllRefreshables { refreshAfterQuit() }
+    }
+
+    fun restart() {
+        onAllRefreshables { refreshAfterRestart() }
+    }
 }
+
 
 
 

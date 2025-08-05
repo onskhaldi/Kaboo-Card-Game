@@ -12,6 +12,7 @@ package entity
 class Player(val name: String) {
     var hand: Array<Array<Card?>> = Array(2) { Array<Card?>(2) { null } }
     var drawnCard: Card? = null
+    var startingCards: MutableList<Card> = mutableListOf()
 
     override fun toString(): String {
         val cardsInHand = hand.flatten().count { it != null }

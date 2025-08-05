@@ -7,13 +7,17 @@ data class KabooGame (
 )
 
 {
+
     var state:  GamePhase? = null
     var selected : MutableList<Card> = mutableListOf()
     var drawPile: Stack<Card> = Stack()
     var playStack: Stack<Card> = Stack()
     var lastRound: Boolean = false
     val log: MutableList<String> = mutableListOf()
-    var knockInitiatorIndex: Int? = null
+    var isKnockRound: Boolean = false
+    var knockInitiatorIndex: Int = -1
+    var knockTurnsRemaining: Int = 0
 
+    var showStartingCards: Boolean = false
 }
 

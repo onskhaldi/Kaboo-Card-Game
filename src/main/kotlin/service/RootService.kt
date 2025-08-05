@@ -1,6 +1,5 @@
 package service
 import entity.KabooGame
-
 /**
  * Main class of the service layer for the Kombi-Duell card game. Provides access
  * to all other service classes and holds the [currentGame] state for these

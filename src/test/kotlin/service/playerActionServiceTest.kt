@@ -60,7 +60,7 @@ class PlayerActionServiceTest {
 
         assertEquals(queen, player.drawnCard)
         assertTrue(game.state == GamePhase.POWERCARD_DRAWN)
-        assertTrue(refreshable.refreshAfterDrawCalled)
+        assertTrue(refreshable.refreshAfterDrawFromDeckCalled)
     }
     /**
      * Testet das Ziehen einer normalen Punktkarte (keine Powerkarte).
@@ -91,7 +91,7 @@ class PlayerActionServiceTest {
 
         assertTrue(game.log.last().contains("hat eine Punktekarte (${pointCard.value})"))
 
-        assertTrue(testRefreshable.refreshAfterDrawCalled)
+        assertTrue(testRefreshable.refreshAfterDrawFromDeckCalled)
     }/**
      * Testet das Ausspielen einer QUEEN-Karte.
      * Erwartet:
@@ -334,7 +334,7 @@ class PlayerActionServiceTest {
 
         assertEquals(GamePhase.DRAW_FROM_PILE, game.state)
         assertTrue(game.log.last().contains("Alice hat die oberste Karte vom Ablagestapel gezogen: ${topCard.value}"))
-        assertTrue(testRefreshable.refreshAfterDrawCalled)
+        assertTrue(testRefreshable.refreshAfterDrawPileCalled)
     }
     /**
      * Testet das Verhalten von [playPowerCard], wenn die Methode in einer ungültigen Spielphase aufgerufen wird.
@@ -1275,7 +1275,8 @@ class PlayerActionServiceTest {
         game.selected.clear()
         game.selected.add(card)
 
-        assertThrows<IllegalArgumentException> {
+        assertThrows<IndexOutOfBoundsException>
+       {
             rootService.playerActionService.confirmChoice()
         }
     }

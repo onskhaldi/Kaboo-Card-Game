@@ -1,19 +1,23 @@
 package service
 
 import entity.Card
+import entity.Player
 
 /**
  * A test implementation of the [Refreshable] interface that records which methods were called,
  * and stores the passed arguments for inspection in unit tests.
  */
 class TestRefreshable: Refreshable {
-
+    var restartCalled=false
+    var  quitCalled=false
+    var refreshAfterHideStartingCardsCalled=false
+    var refreshAfterShowStartingCardsCalled =false
     var refreshAfterGameStartCalled = false
     var refreshAfterShowCardsCalled = false
     var refreshAfterPlayPowerCalled = false
     var refreshAfterKnockCalled = false
     var refreshAfterTurnEndCalled = false
-    var refreshAfterDrawCalled = false
+    var refreshAfterDrawFromDeckCalled = false
     var refreshAfterSelectCalled = false
     var refreshAfterSwapCalled = false
     var refreshAfterConfirmSwapCalled = false
@@ -25,13 +29,19 @@ class TestRefreshable: Refreshable {
     var refreshAfterHideCardsCalled = false
     var refreshAfterConfirmChoiceCalled = false
     var refreshAfterpassCalled = false
-
+var refreshAfterDrawPileCalled=false
     var lastCard1Shown: Card? = null
     var lastCard2Shown: Card? = null
 
-    override fun refreshAfterGameStart() {
+    override fun  refreshAfterQuit(){
+        quitCalled=true
+    }
+
+    override fun refreshAfterStartNewGame() {
         refreshAfterGameStartCalled = true
     }
+    override fun refreshAfterGameOver(gewinner: Player?, score: Int)
+    { refreshAfterGameOverCalled=true}
 
     override fun refreshAfterShowCards(card1: Card, card2: Card?) {
         refreshAfterShowCardsCalled = true
@@ -51,10 +61,15 @@ class TestRefreshable: Refreshable {
         refreshAfterTurnEndCalled = true
     }
 
-    override fun refreshAfterDraw() {
-        refreshAfterDrawCalled = true
+    override fun refreshAfterDrawDeck() {
+        refreshAfterDrawFromDeckCalled=true
     }
-
+    override fun refreshAfterRestart() {
+        restartCalled = true
+    }
+override fun refreshAfterDrawPile(){
+    refreshAfterDrawPileCalled=true
+}
     override fun refreshAfterSelect() {
         refreshAfterSelectCalled = true
     }
@@ -71,6 +86,7 @@ class TestRefreshable: Refreshable {
         refreshAfterPlayerEditCalled = true
     }
 
+
     override fun refreshAfterDiscard() {
         refreshAfterDiscardCalled = true
     }
@@ -83,9 +99,14 @@ class TestRefreshable: Refreshable {
         refreshAfterStartTurnCalled=true
     }
 
-    /*override fun refreshAfterGameOver() {
-        refreshAfterGameOverCalled = true
-    }*/
+    override fun  refreshAfterShowStartingCards(){
+        refreshAfterShowStartingCardsCalled=true
+    }
+
+    override fun refreshAfterHideStartingCards() {
+        refreshAfterHideStartingCardsCalled = true
+    }
+
 
     override fun refreshAfterHideCards() {
         refreshAfterHideCardsCalled = true
@@ -99,12 +120,13 @@ class TestRefreshable: Refreshable {
         refreshAfterpassCalled = true
     }
     fun reset() {
+        refreshAfterGameOverCalled=false
         refreshAfterGameStartCalled = false
         refreshAfterShowCardsCalled = false
         refreshAfterPlayPowerCalled = false
         refreshAfterKnockCalled = false
         refreshAfterTurnEndCalled = false
-        refreshAfterDrawCalled = false
+        refreshAfterDrawFromDeckCalled = false
         refreshAfterSelectCalled = false
         refreshAfterSwapCalled = false
         refreshAfterConfirmSwapCalled = false
@@ -115,10 +137,16 @@ class TestRefreshable: Refreshable {
         refreshAfterGameOverCalled = false
         refreshAfterHideCardsCalled = false
         refreshAfterConfirmChoiceCalled = false
+        refreshAfterHideStartingCardsCalled=false
+         refreshAfterShowStartingCardsCalled=false
+        refreshAfterDrawPileCalled=false
         refreshAfterpassCalled = false
         lastCard1Shown = null
         lastCard2Shown = null
+         quitCalled=false
+        var restartCalled=false
     }
+
 
 }
 

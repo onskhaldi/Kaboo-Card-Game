@@ -27,7 +27,7 @@ data class Card(
                 value == CardValue.QUEEN
     }
 
-    override fun toString() = "$suit$value"
+    override fun toString() = "$value of $suit"
 
 }
 
