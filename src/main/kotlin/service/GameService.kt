@@ -426,10 +426,12 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
         } }
 
     fun quit() {
+        rootService.currentGame = null
         onAllRefreshables { refreshAfterQuit() }
     }
 
     fun restart() {
+        rootService.currentGame = null
         onAllRefreshables { refreshAfterRestart() }
     }
 }

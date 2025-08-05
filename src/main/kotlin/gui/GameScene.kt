@@ -332,6 +332,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
      * @param cardImageLoader Loader for card images.
      * @param cardsToShow Optional cards to be revealed regardless of game state.
      */
+
     private fun initialGridView(
         hand: List<Card>,
         handDeckView: CardSquareView,
@@ -340,17 +341,8 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
     ) {
         val game = rootService.currentGame ?: return
 
-        val shownCards = when {
-            game.showStartingCards -> {
-                val starting = when (handDeckView) {
-                    player1Grid -> game.player1.startingCards
-                    player2Grid -> game.player2.startingCards
-                    else -> emptyList()
-                }
-                starting + cardsToShow
-            }
-            else -> cardsToShow
-        }
+        // Nur das verwenden, was der Aufrufer explizit anzeigen will
+        val shownCards = cardsToShow
 
         val cardViews = hand.map { card ->
             CardView(
@@ -365,8 +357,9 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
                     showBack()
                 }
                 onMouseClicked = {
-                    val isCurrentPlayer = (handDeckView == player1Grid && game.currentPlayer == 0) ||
-                            (handDeckView == player2Grid && game.currentPlayer == 1)
+                    val isCurrentPlayer =
+                        (handDeckView == player1Grid && game.currentPlayer == 0) ||
+                                (handDeckView == player2Grid && game.currentPlayer == 1)
 
                     if (isCurrentPlayer || game.state in listOf(
                             GamePhase.PLAY_QUEEN,
@@ -385,6 +378,8 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
 
         handDeckView.displayCards(cardViews)
     }
+
+
 
     /**
      * Handles selecting a card in the UI and forwarding
@@ -444,17 +439,27 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
      * Updates both player grids so that all starting cards are visible,
      * while keeping the rest of the state unchanged.
      */
+
+
     override fun refreshAfterShowStartingCards() {
-
         val game = rootService.currentGame ?: return
-        val cardImageLoader = CardImageLoader()
+        val loader = CardImageLoader()
 
-        val player1Cards = game.player1.hand.flatten().filterNotNull()
-        val player2Cards = game.player2.hand.flatten().filterNotNull()
+        val p1Cards = game.player1.hand.flatten().filterNotNull()
+        val p2Cards = game.player2.hand.flatten().filterNotNull()
 
-        initialGridView(player1Cards, player1Grid, cardImageLoader)
-        initialGridView(player2Cards, player2Grid, cardImageLoader)
-        initialLogLabel(loglabel, game.log[game.log.size - 1])
+        if (game.currentPlayer == 0) {
+            // show ONLY player 1's starting cards
+            initialGridView(p1Cards, player1Grid, loader, cardsToShow = game.player1.startingCards)
+            // opponent stays hidden (normal visibility)
+            initialGridView(p2Cards, player2Grid, loader, cardsToShow = emptyList())
+        } else {
+            // show ONLY player 2's starting cards
+            initialGridView(p2Cards, player2Grid, loader, cardsToShow = game.player2.startingCards)
+            initialGridView(p1Cards, player1Grid, loader, cardsToShow = emptyList())
+        }
+
+        initialLogLabel(loglabel, game.log.last())
     }
     /**
      * Called after the "Hide starting cards" action is triggered.
@@ -463,17 +468,19 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
      * only showing revealed cards or those marked as visible.
      */
     override fun refreshAfterHideStartingCards() {
-
         val game = rootService.currentGame ?: return
-        val cardImageLoader = CardImageLoader()
+        val loader = CardImageLoader()
 
-        val player1Cards = game.player1.hand.flatten().filterNotNull()
-        val player2Cards = game.player2.hand.flatten().filterNotNull()
+        val p1Cards = game.player1.hand.flatten().filterNotNull()
+        val p2Cards = game.player2.hand.flatten().filterNotNull()
 
-        initialGridView(player1Cards, player1Grid, cardImageLoader)
-        initialGridView(player2Cards, player2Grid, cardImageLoader)
-        initialLogLabel(loglabel, game.log[game.log.size - 1])
+        // hide again: pass no extra cards to show
+        initialGridView(p1Cards, player1Grid, loader, cardsToShow = emptyList())
+        initialGridView(p2Cards, player2Grid, loader, cardsToShow = emptyList())
+
+        initialLogLabel(loglabel, game.log.last())
     }
+
     /**
      * Called after the "Show cards" effect from a power card is triggered.
      *
@@ -745,6 +752,8 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         selectedHandCard = null
         clickedHandCard = null
     }
+
+
 }
 
 
