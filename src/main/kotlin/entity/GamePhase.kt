@@ -1,6 +1,11 @@
 package entity
+/**
+ * Represents the different phases of a Kaboo game.
+ * Each phase indicates what kind of action is currently allowed or
+ * what state the game is in.
+ */
 enum class GamePhase {
-     KNOCKED,
+    KNOCKED,
     READYTODRAW,
     FINISHED,
     INITIALIZED,
@@ -9,9 +14,15 @@ enum class GamePhase {
     SHOW_STARTING_HANDS_2,
     DRAW_FROM_DECK,DRAW_FROM_PILE,
     SHOW_CARDS,
-    PLAY_QUEEN, PLAY_SEVEN_OR_EIGHT, PLAY_NINE_OR_TEN,PLAY_JACK,
-    POWERCARD_DRAWN, PUNKTCARD_DRAWN,
+    PLAY_QUEEN,
+    PLAY_SEVEN_OR_EIGHT,
+    PLAY_NINE_OR_TEN,
+    PLAY_JACK,
+    POWERCARD_DRAWN,
+    PUNKTCARD_DRAWN,
     ENDTURN,
-    confirmQueenShow,PLAYER_ADDITION,PLAYERS_ADDED
+    CONFIRMQUEENSHOW,
+    PLAYER_ADDITION,
+    PLAYERS_ADDED
 }
 

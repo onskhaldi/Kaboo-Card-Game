@@ -172,7 +172,7 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
         val game = rootService.currentGame
         checkNotNull(game) { "No game is currently active." }
 
-        require(game.state == GamePhase.SHOW_CARDS|| game.state == GamePhase.confirmQueenShow) {
+        require(game.state == GamePhase.SHOW_CARDS|| game.state == GamePhase.CONFIRMQUEENSHOW) {
             "Karten können nur nach dem Aufdecken wieder verdeckt werden. Aktuelle Phase: ${game.state}"
         }
 
@@ -424,12 +424,24 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
             }
 
         } }
-
+    /**
+     * Ends the current game session and clears the game state.
+     *
+     * Sets [rootService.currentGame] to `null` to indicate that no game is active,
+     * then notifies all registered refreshables via [refreshAfterQuit] so the UI
+     * and other listeners can update accordingly.
+     */
     fun quit() {
         rootService.currentGame = null
         onAllRefreshables { refreshAfterQuit() }
     }
-
+    /**
+     * Restarts the game by clearing the current game state.
+     *
+     * Similar to [quit], sets [rootService.currentGame] to `null`,
+     * but triggers [refreshAfterRestart] so the UI and logic can
+     * reinitialize for a new game session.
+     */
     fun restart() {
         rootService.currentGame = null
         onAllRefreshables { refreshAfterRestart() }

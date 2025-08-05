@@ -598,7 +598,7 @@ class GameServiceTest {
         rootService.gameService.startNewGame("Alice", "Bob")
         val game = rootService.currentGame!!
 
-        game.state = GamePhase.confirmQueenShow
+        game.state = GamePhase.CONFIRMQUEENSHOW
         val card1 = game.player1.hand[1][0]!!
         val card2 = game.player2.hand[1][0]!!
         card1.isRevealed = true

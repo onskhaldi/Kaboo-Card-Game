@@ -95,7 +95,7 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
      */
       private fun swapCardsInternal(game: KabooGame, player: Player, gegner: Player) {
         require(game.state == GamePhase.PLAY_QUEEN || game.state == GamePhase.PLAY_JACK||
-                game.state == GamePhase.confirmQueenShow) {
+                game.state == GamePhase.CONFIRMQUEENSHOW) {
             "Karten dürfen nur mit Dame oder Bube getauscht werden."
         }
         var posCurrentPlayer: Pair<Int, Int>? = null
@@ -357,10 +357,10 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
                                 opponent.hand.flatten().contains(selected[0]) )){ "DIFFERENT OWNERS ." }
                 confirmQueenShow(selected[0], selected[1])
                 game.state = GamePhase.PLAY_QUEEN
-                game.state = GamePhase.confirmQueenShow
+                game.state = GamePhase.CONFIRMQUEENSHOW
             }
 
-            GamePhase.confirmQueenShow -> {
+            GamePhase.CONFIRMQUEENSHOW -> {
                 confirmQueenSwap()
 
             }
@@ -447,7 +447,7 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
     private fun confirmQueenShow(cardA: Card, cardB: Card) {
         val game = rootService.currentGame!!
         rootService.gameService.showCards(cardA, cardB)
-        game.state = GamePhase.confirmQueenShow
+        game.state = GamePhase.CONFIRMQUEENSHOW
 
     }
     /**
@@ -455,7 +455,7 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
      */
     fun confirmQueenSwap() {
         val game = rootService.currentGame!!
-        require(game.state == GamePhase.confirmQueenShow) {
+        require(game.state == GamePhase.CONFIRMQUEENSHOW) {
             "player saw the cards"
         }
 
@@ -475,10 +475,22 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
         game.log.add("${player.name} hat nach Ansicht mit Dame getauscht.")
     }
 
-
+    /**
+     * Cancels the current power card effect, specifically during the Queen's
+     * "show cards" confirmation phase.
+     *
+     * This method:
+     * - Verifies that the current game phase is [GamePhase.CONFIRMQUEENSHOW].
+     * - Sets the game phase to [GamePhase.ENDTURN].
+     * - Calls [rootService.gameService.endTurn] to advance to the next player's turn.
+     * - Logs the cancellation action to the game log.
+     * - Notifies all registered refreshables via [refreshAfterConfirmChoice] to update the UI.
+     *
+     * @throws IllegalArgumentException if the current game phase is not [GamePhase.CONFIRMQUEENSHOW].
+     */
     fun cancelPowerEffect() {
         val game = rootService.currentGame ?: return
-        require(game.state == GamePhase.confirmQueenShow) {
+        require(game.state == GamePhase.CONFIRMQUEENSHOW) {
             "player saw the cards"
         }
 

@@ -17,7 +17,17 @@ data class Card(
 
 )
 
-{ fun isPowerCard(): Boolean {
+{
+    /**
+     * Checks whether this card is a power card.
+     *
+     * In Kaboo, a power card is any card with a value of
+     * [CardValue.SEVEN], [CardValue.EIGHT], [CardValue.NINE],
+     * [CardValue.TEN], [CardValue.JACK], or [CardValue.QUEEN].
+     *
+     * @return `true` if the card's value matches one of the power card values, `false` otherwise.
+     */
+    fun isPowerCard(): Boolean {
         return value == CardValue.SEVEN ||
                 value == CardValue.EIGHT ||
                 value == CardValue.NINE ||
@@ -26,6 +36,11 @@ data class Card(
                 value == CardValue.QUEEN
     }
 
+    /**
+     * Returns a string representation of the card.
+     *
+     * @return A string in the format `"VALUE of SUIT"`, e.g. `"ACE of SPADES"`.
+     */
     override fun toString() = "$value of $suit"
 
 }

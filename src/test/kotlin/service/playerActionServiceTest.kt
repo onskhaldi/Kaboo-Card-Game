@@ -717,7 +717,7 @@ class PlayerActionServiceTest {
         val player = game.player1
         val opponent = game.player2
         game.currentPlayer = 0
-        game.state = GamePhase.confirmQueenShow
+        game.state = GamePhase.CONFIRMQUEENSHOW
         val cardFromPlayer = player.hand[0][0]!!
         val cardFromOpponent = opponent.hand[1][1]!!
         val queen = Card(CardSuit.HEARTS, CardValue.QUEEN,true)
@@ -897,7 +897,7 @@ class PlayerActionServiceTest {
 
          rootService.playerActionService.confirmChoice()
 
-            assertEquals(GamePhase.confirmQueenShow, game.state)
+            assertEquals(GamePhase.CONFIRMQUEENSHOW, game.state)
 
         }
     /**
@@ -1264,7 +1264,7 @@ class PlayerActionServiceTest {
         val rootService = RootService()
         rootService.gameService.startNewGame("Alice", "Bob")
         val game = rootService.currentGame!!
-        game.state = GamePhase.confirmQueenShow
+        game.state = GamePhase.CONFIRMQUEENSHOW
         val player = game.player1
 
         game.currentPlayer = 0
@@ -1298,7 +1298,7 @@ class PlayerActionServiceTest {
             rootService.gameService.startNewGame("Alice", "Bob")
             val game = rootService.currentGame!!
             val player = game.player1
-            game.state = GamePhase.confirmQueenShow
+            game.state = GamePhase.CONFIRMQUEENSHOW
             game.currentPlayer = 0
 
             val card1  = Card(CardSuit.CLUBS, CardValue.FIVE, false)
@@ -1325,7 +1325,6 @@ class PlayerActionServiceTest {
      * - Die Methode `confirmChoice()` erkennt, dass nicht zwei Karten ausgewählt wurden
      *   (eine eigene und eine gegnerische) und wirft eine [IllegalArgumentException].
      */
-
     @Test
     fun confirmChoice_PlayJack_ThrowsIfSizeNot2() {
         val rootService = RootService()

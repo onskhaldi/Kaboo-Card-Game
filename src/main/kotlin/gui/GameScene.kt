@@ -585,10 +585,8 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         val game = rootService.currentGame ?: return
         val cardImageLoader = CardImageLoader()
         val topCard: Card?
-
         val player1HandCards = game.player1.hand.flatten().filterNotNull()
         val player2HandCards = game.player2.hand.flatten().filterNotNull()
-
         if (game.state == GamePhase.PLAY_QUEEN || game.state == GamePhase.PLAY_JACK) {
             initialGridView(player1HandCards, player1Grid, cardImageLoader)
             initialGridView(player2HandCards, player2Grid, cardImageLoader)
@@ -692,7 +690,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         val game = rootService.currentGame ?: return
         val cardImageLoader = CardImageLoader()
         val cardsToShow = when (game.state) {
-            GamePhase.confirmQueenShow,
+            GamePhase.CONFIRMQUEENSHOW,
             GamePhase.PLAY_SEVEN_OR_EIGHT,
             GamePhase.PLAY_NINE_OR_TEN -> game.selected.toList()
 
