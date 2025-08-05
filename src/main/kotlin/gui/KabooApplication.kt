@@ -67,3 +67,4 @@ class KabooApplication : BoardGameApplication("Kaboo"), Refreshable {
     override fun refreshAfterRestart() { showMenuScene(newGameMenuScene) }
 }
 
+

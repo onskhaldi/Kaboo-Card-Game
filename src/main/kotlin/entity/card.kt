@@ -9,7 +9,6 @@ package entity
  * @property suit the suit of the card
  * @property value the value of the card
  */
-
 data class Card(
     val suit: CardSuit,
     val value: CardValue,
@@ -17,8 +16,8 @@ data class Card(
     var isRevealed: Boolean = false
 
 )
-{
-    fun isPowerCard(): Boolean {
+
+{ fun isPowerCard(): Boolean {
         return value == CardValue.SEVEN ||
                 value == CardValue.EIGHT ||
                 value == CardValue.NINE ||

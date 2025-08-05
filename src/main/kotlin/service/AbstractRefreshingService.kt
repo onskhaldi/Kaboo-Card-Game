@@ -26,3 +26,4 @@ abstract class AbstractRefreshingService {
         refreshables.forEach { it.method() }
 
 }
+

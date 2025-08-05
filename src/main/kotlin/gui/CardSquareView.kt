@@ -39,3 +39,4 @@ class CardSquareView(posX: Number, posY: Number) :
         }
     }
 }
+

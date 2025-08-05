@@ -1,6 +1,4 @@
 package entity
-
-
 enum class GamePhase {
      KNOCKED,
     READYTODRAW,
@@ -16,3 +14,4 @@ enum class GamePhase {
     ENDTURN,
     confirmQueenShow,PLAYER_ADDITION,PLAYERS_ADDED
 }
+

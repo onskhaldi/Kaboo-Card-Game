@@ -50,3 +50,4 @@ class AbstractRefreshingServiceTest {
         assertTrue(isTestRefreshable, "The refresh method should have been called on the test refreshable.")
     }
 }
+

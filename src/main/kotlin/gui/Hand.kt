@@ -9,3 +9,4 @@ class Hand(posX: Number, posY: Number):
         height = 200.0
     }
 }
+

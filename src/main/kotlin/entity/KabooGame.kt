@@ -7,7 +7,6 @@ data class KabooGame (
 )
 
 {
-
     var state:  GamePhase? = null
     var selected : MutableList<Card> = mutableListOf()
     var drawPile: Stack<Card> = Stack()

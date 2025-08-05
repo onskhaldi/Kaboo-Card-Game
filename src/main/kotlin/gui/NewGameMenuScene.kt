@@ -82,3 +82,4 @@ class NewGameMenuScene(private val rootService: RootService) : MenuScene(400, 10
         )
     }
 }
+

@@ -50,3 +50,4 @@ class NextPlayerScene(private val rootService: RootService) : MenuScene(800, 500
     }
 }
 
+
