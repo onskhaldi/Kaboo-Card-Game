@@ -12,11 +12,26 @@ import tools.aqua.bgw.components.gamecomponentviews.CardView
 import tools.aqua.bgw.core.Alignment
 import tools.aqua.bgw.style.BorderRadius
 import java.util.*
+
+/**
+ * Main game scene for the Kaboo card game.
+ *
+ * This scene displays the full playing field, player hands,
+ * draw/discard piles, player names, and action buttons.
+ * It also reacts to game events via [Refreshable] to update the UI
+ * according to the current game state.
+ *
+ * @property rootService Reference to the central [RootService] handling all game logic and state.
+ */
 class GameScene(private val rootService: RootService) : BoardGameScene(1920, 1080), Refreshable {
+    /** Last clicked card's [CardView], if any. */
     private var clickedHandCard: CardView? = null
+    /** Last selected card's [Card] data, if any. */
     private var selectedHandCard: Card? = null
+    /** Loader for all card images used in the game. */
     private val cardImages = CardImageLoader()
-    // -------------BUTTONS-------------//
+    // -------------BUTTONS-------------
+    /** Button to reveal both players' starting cards. */
     private val showStartingButton = Button(
         posX = 700,
         posY = 1010,
@@ -29,7 +44,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
             rootService.gameService.showStartingCards()
         }
     }
-
+    /** Button to hide both players' starting cards again. */
     private val hideStartingButton = Button(
         posX = 700,
         posY = 900,
@@ -42,7 +57,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
             rootService.gameService.hideStartingCards()
         }
     }
-
+    /** Button to draw a card from the draw pile. */
 
     private val drawFromDeckButton = Button(
         posX = 255,
@@ -58,7 +73,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         }
     }
 
-    //knock
+    /** Button to knock (signal the last round). */
     private val knockButton = Button(
         posX = 5,
         posY = 1010,
@@ -72,7 +87,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
             rootService.playerActionService.knock()
         }
     }
-
+    /** Button to swap a selected card. */
 
     private val swapButton = Button(
         posX = 130,
@@ -94,7 +109,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         }
     }
 
-    //draw from Pile
+    /** Button to draw a card from the discard pile. */
     private val drawFromPileButton = Button(
         posX = 380,
         posY = 1010,
@@ -107,7 +122,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         onMouseClicked = { rootService.playerActionService.drawFromPile() }
     }
 
-    //discard card
+    /** Button to discard the currently drawn card. */
     private val discardButton = Button(
         posX = 505,
         posY = 1010,
@@ -123,8 +138,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         }
     }
 
-
-
+    /** Button to skip swap in case of Queen if you just want to see the cards and decided not to swap */
     private val passButton = Button(
         posX = 300,
         posY = 700,
@@ -140,7 +154,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
 
 
     }
-    //ConfirmPowerEffect
+    /** Button to confirm using a power card effect , in case of queenEffect you click on it two times, the first time to see the cards than in case you decided to swap the cards */
     private val confirmPowerButton = Button(
         posX = 300,
         posY = 750,
@@ -154,8 +168,8 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
             rootService.playerActionService.confirmChoice()
         }
     }
-    //-----------Names
-
+    //-----------Labels
+    /** Displays player 1's name. */
     private val player1NameLabel = Label(
         posX = 50,
         posY = 50,
@@ -167,7 +181,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         visual = ColorVisual(30, 144, 255).apply { style.borderRadius = BorderRadius.SMALL }
         font = Font(size = 28, fontWeight = Font.FontWeight.BOLD)
     }
-
+    /** Displays player 2's name. */
     private val player2NameLabel = Label(
         posX = 1800,
         posY = 1020,
@@ -178,7 +192,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         visual = ColorVisual(30, 144, 255).apply { style.borderRadius = BorderRadius.SMALL }
         font = Font(size = 28, fontWeight = Font.FontWeight.BOLD)
     }
-
+    /** Displays the game log. */
     private val loglabel = Label(
         posX = 200,
         posY = 800,
@@ -190,13 +204,13 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         font = Font(size = 28, fontWeight = Font.FontWeight.BOLD)
     }
 
-
-
+    // --------- CARD AREAS -----------
+    /** Player 1's 2×2 hand grid. */
     private val player1Grid = CardSquareView(posX = 150.0, posY = 400.0)   // near "Bart"
+    /** Player 2's 2×2 hand grid. */
     private val player2Grid = CardSquareView(posX = 1700.0, posY = 700.0) // near "Zoidberg"
 
-
-
+    /** Draw pile view. */
     private val drawPile = LabeledStackView(
         posX = 500,
         posY = 500,
@@ -205,7 +219,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
     ).apply {
         visual = ColorVisual(11, 94, 28)
     }
-
+    /** Discard pile view. */
     private val discardPile = LabeledStackView(
         posX = 1200,
         posY = 500,
@@ -215,8 +229,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         visual = ColorVisual(11, 94, 28)
     }
 
-
-    //_____map
+    /** Maps each [Card] to its corresponding [CardView] in the scene. */
     private val cardMap: BidirectionalMap<Card, CardView> = BidirectionalMap()
 
     init {
@@ -241,7 +254,10 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         )
     }
 
-
+    /**
+     * Initializes the given [LabeledStackView] with cards from a stack,
+     * showing their back sides (for the draw pile).
+     */
     private fun initialdrawPile(
         stack: Stack<Card>, stackView: LabeledStackView, cardImageLoader: CardImageLoader
     ) {
@@ -259,7 +275,10 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         }
     }
 
-
+    /**
+     * Initializes the given [LabeledStackView] with cards from a stack,
+     * showing their front sides (for the discard pile).
+     */
     private fun initialdiscardPile(
         stack: Stack<Card>,
         stackView: LabeledStackView,
@@ -279,7 +298,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
             cardMap.add(card to cardView)
         }
     }
-
+    /** Sets up a player's name label with bold text. */
     private fun initialPlayerNameLabel(label: Label, text: String) {
         label.text = text
         label.font = Font(
@@ -295,7 +314,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
             fontWeight = Font.FontWeight.BOLD
         )
     }
-
+    /** Sets up the game log label. */
     private fun initialLogLabel(label: Label, text: String) {
         label.text = text
         label.font = Font(
@@ -305,6 +324,14 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
     }
 
 
+    /**
+     * Displays a player's hand in their [CardSquareView].
+     *
+     * @param hand List of [Card] objects in the player's hand.
+     * @param handDeckView The grid view to display the cards in.
+     * @param cardImageLoader Loader for card images.
+     * @param cardsToShow Optional cards to be revealed regardless of game state.
+     */
     private fun initialGridView(
         hand: List<Card>,
         handDeckView: CardSquareView,
@@ -359,7 +386,10 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         handDeckView.displayCards(cardViews)
     }
 
-
+    /**
+     * Handles selecting a card in the UI and forwarding
+     * the selection to the [RootService].
+     */
     private fun selectCard(card: Card, cardView: CardView) {
         val game = rootService.currentGame ?: return
 
@@ -374,7 +404,16 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
             clickedHandCard = null
         }
     }
+    // Refreshable Overrides ------
 
+
+    /**
+     * Called after a new game starts.
+     *
+     * Resets the draw/discard piles, clears the card map,
+     * updates player names, fills both player grids with their starting hands,
+     * and shows the initial log message.
+     */
 
     override fun refreshAfterStartNewGame() {
         val game = rootService.currentGame ?: return
@@ -399,7 +438,12 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         initialLogLabel(loglabel, game.log[game.log.size - 1])
     }
 
-
+    /**
+     * Called after the "Show starting cards" action is triggered.
+     *
+     * Updates both player grids so that all starting cards are visible,
+     * while keeping the rest of the state unchanged.
+     */
     override fun refreshAfterShowStartingCards() {
 
         val game = rootService.currentGame ?: return
@@ -412,7 +456,12 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         initialGridView(player2Cards, player2Grid, cardImageLoader)
         initialLogLabel(loglabel, game.log[game.log.size - 1])
     }
-
+    /**
+     * Called after the "Hide starting cards" action is triggered.
+     *
+     * Updates both player grids to hide the starting cards again,
+     * only showing revealed cards or those marked as visible.
+     */
     override fun refreshAfterHideStartingCards() {
 
         val game = rootService.currentGame ?: return
@@ -425,7 +474,15 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         initialGridView(player2Cards, player2Grid, cardImageLoader)
         initialLogLabel(loglabel, game.log[game.log.size - 1])
     }
-
+    /**
+     * Called after the "Show cards" effect from a power card is triggered.
+     *
+     * Reveals the selected cards for the relevant player
+     * without altering the other player's hand visibility.
+     *
+     * @param card1 The first revealed card.
+     * @param card2 An optional second revealed card.
+     */
 
     override fun refreshAfterShowCards(card1: Card, card2: Card?) {
         val game = rootService.currentGame ?: return
@@ -445,6 +502,12 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
     }
 
 
+    /**
+     * Called after hiding cards that were previously revealed
+     * (e.g., after a show effect ends).
+     *
+     * Resets both player grids to their normal visibility rules.
+     */
     override fun refreshAfterHideCards() {
         val game = rootService.currentGame ?: return
         val cardImageLoader = CardImageLoader()
@@ -457,6 +520,11 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         initialLogLabel(loglabel, game.log[game.log.size - 1])
     }
 
+    /**
+     * Called after a player draws from the deck.
+     *
+     * Updates the draw pile display and appends the latest log entry.
+     */
 
     override fun refreshAfterDrawDeck() {
         val game = rootService.currentGame ?: return
@@ -466,29 +534,36 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         initialLogLabel(loglabel, game.log[game.log.size - 1])
     }
 
-
+    /**
+     * Called after a player knocks.
+     *
+     * Disables the knock button, updates both player grids,
+     * and updates the log with an additional message indicating the last round.
+     */
     override fun refreshAfterKnock() {
         val game = rootService.currentGame ?: return
         val cardImageLoader = CardImageLoader()
 
-        // Knock-Button deaktivieren
         knockButton.isDisabled = true
 
-        // Spielerhände aktualisieren
         val player1Cards = game.player1.hand.flatten().filterNotNull()
         val player2Cards = game.player2.hand.flatten().filterNotNull()
 
         initialGridView(player1Cards, player1Grid, cardImageLoader)
         initialGridView(player2Cards, player2Grid, cardImageLoader)
 
-        // Log-Nachricht mit Hinweis auf letzte Runde
         val knockMsg = game.log.lastOrNull() ?: ""
         val additionalInfo = "Letzte Runde! Jeder Spieler hat noch genau einen Zug."
 
         initialLogLabel(loglabel, "$knockMsg\n$additionalInfo")
     }
 
-
+    /**
+     * Called after a swap action occurs.
+     *
+     * Depending on the game state, updates either both player grids (for Queen/Jack swaps)
+     * or just the current player's grid. Also refreshes the discard pile if needed.
+     */
     override fun refreshAfterSwap() {
         val game = rootService.currentGame ?: return
         val cardImageLoader = CardImageLoader()
@@ -530,7 +605,12 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
             initialLogLabel(loglabel, game.log.lastOrNull() ?: "")
         }
     }
-
+    /**
+     * Called after a player draws from the discard pile.
+     *
+     * Updates the discard pile display to reflect the remaining cards
+     * and appends the latest log message.
+     */
 
     override fun refreshAfterDrawPile() {
         val game = rootService.currentGame ?: return
@@ -553,7 +633,11 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         initialLogLabel(loglabel, game.log[game.log.size - 1])
     }
 
-
+    /**
+     * Called after a player discards a card.
+     *
+     * Adds the discarded card to the discard pile and updates the log.
+     */
     override fun refreshAfterDiscard() {
         val game = rootService.currentGame ?: return
         val cardImageLoader = CardImageLoader()
@@ -579,7 +663,13 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         }
         initialLogLabel(loglabel, game.log[game.log.size - 1])
     }
-
+    /**
+     * Called after the "Confirm choice" button is pressed
+     * during a power card effect.
+     *
+     * Updates the affected player grids, refreshes the discard pile
+     * (in case the played card was discarded), and clears any selected cards.
+     */
 
     override fun refreshAfterConfirmChoice() {
         val game = rootService.currentGame ?: return
@@ -593,12 +683,8 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         }
         val player1Cards = game.player1.hand.flatten().filterNotNull()
         val player2Cards = game.player2.hand.flatten().filterNotNull()
-
-        // Spieleransichten aktualisieren
         initialGridView(player1Cards, player1Grid, cardImageLoader)
         initialGridView(player2Cards, player2Grid, cardImageLoader)
-
-        // Ablagestapel aktualisieren (z.B. falls Powerkarte abgelegt wurde)
         discardPile.clear()
         val topCard = game.playStack.peek()
         if (topCard != null) {
@@ -613,15 +699,17 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
             cardMap.add(topCard to topCardView)
         }
 
-        // UI-Zustand zurücksetzen
         selectedHandCard = null
         clickedHandCard = null
-        // game.selected.clear()
-
-        // Log anzeigen
         initialLogLabel(loglabel, game.log.lastOrNull() ?: "")
     }
 
+    /**
+     * Called after a player's turn ends.
+     *
+     * Refreshes both player grids, hides all revealed cards,
+     * and clears any current selections.
+     */
 
     override fun refreshAfterTurnEnd() {
         val game = rootService.currentGame ?: return
@@ -639,6 +727,11 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         clickedHandCard = null
     }
 
+    /**
+     * Called after a new turn starts.
+     *
+     * Refreshes both player grids and clears any selected card state.
+     */
     override fun refreshAfterStartTurn() {
         val game = rootService.currentGame ?: return
         val cardImageLoader = CardImageLoader()

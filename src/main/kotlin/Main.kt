@@ -1,9 +1,7 @@
 import gui.KabooApplication
 
 /**
- * Main entry point that starts the [KabooApplication]
- *
- * Once the application is closed, it prints a message indicating the end of the application.
+ * main function that starts the [KabooApplication]
  */
 fun main() {
     KabooApplication().show()
