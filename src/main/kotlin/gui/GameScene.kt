@@ -11,6 +11,8 @@ import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.components.gamecomponentviews.CardView
 import tools.aqua.bgw.core.Alignment
 import tools.aqua.bgw.style.BorderRadius
+import tools.aqua.bgw.visual.ImageVisual
+import java.awt.Color
 import java.util.*
 
 /**
@@ -39,7 +41,8 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         height = 45,
         text = "Show starting Cards"
     ).apply {
-        visual = ColorVisual(0, 128, 128)
+        visual = ColorVisual(245, 245, 220)
+
         onMouseClicked = {
             rootService.gameService.showStartingCards()
         }
@@ -52,7 +55,8 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         height = 45,
         text = "hide starting cards"
     ).apply {
-        visual = ColorVisual(0, 128, 128)
+        visual = ColorVisual(245, 245, 220)
+
         onMouseClicked = {
             rootService.gameService.hideStartingCards()
         }
@@ -178,29 +182,38 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
 
         alignment = Alignment.CENTER
     ).apply {
-        visual = ColorVisual(30, 144, 255).apply { style.borderRadius = BorderRadius.SMALL }
-        font = Font(size = 28, fontWeight = Font.FontWeight.BOLD)
+        // Gold background
+        visual = ColorVisual(255, 215, 0).apply {
+            style.borderRadius = BorderRadius.SMALL
+        }
+        // Black text for contrast
+        font = Font(size = 28, fontWeight = Font.FontWeight.BOLD, color = tools.aqua.bgw.core.Color(0, 0, 0))
     }
     /** Displays player 2's name. */
     private val player2NameLabel = Label(
-        posX = 1800,
-        posY = 1020,
+        posX = 1770,
+        posY = 1000,
         width = 140,
         height = 60,
         alignment = Alignment.CENTER
     ).apply {
-        visual = ColorVisual(30, 144, 255).apply { style.borderRadius = BorderRadius.SMALL }
-        font = Font(size = 28, fontWeight = Font.FontWeight.BOLD)
+        // Gold background
+        visual = ColorVisual(255, 215, 0).apply {
+            style.borderRadius = BorderRadius.SMALL
+        }
+        // Black text for contrast
+        font = Font(size = 28, fontWeight = Font.FontWeight.BOLD, color = tools.aqua.bgw.core.Color(0, 0, 0))
     }
+
     /** Displays the game log. */
     private val loglabel = Label(
         posX = 200,
         posY = 800,
-        width = 1140,
-        height = 100,
+        width = 1100,
+        height = 50,
         alignment = Alignment.CENTER
     ).apply {
-        visual = ColorVisual(30, 144, 255).apply { style.borderRadius = BorderRadius.SMALL }
+        visual = ColorVisual(255, 215, 0).apply { style.borderRadius = BorderRadius.SMALL }
         font = Font(size = 28, fontWeight = Font.FontWeight.BOLD)
     }
 
@@ -233,7 +246,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
     private val cardMap: BidirectionalMap<Card, CardView> = BidirectionalMap()
 
     init {
-        background = ColorVisual(108, 168, 59)
+        background = ImageVisual("tapis.PNG")
         addComponents(
             player1NameLabel,
             player2NameLabel,
@@ -245,7 +258,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
             confirmPowerButton,
             showStartingButton,
             hideStartingButton,
-            //currentPlayerLabel,
             discardPile,
             drawPile,
             player1Grid,
@@ -323,10 +335,8 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         )
     }
 
-
     /**
      * Displays a player's hand in their [CardSquareView].
-     *
      * @param hand List of [Card] objects in the player's hand.
      * @param handDeckView The grid view to display the cards in.
      * @param cardImageLoader Loader for card images.
@@ -711,6 +721,12 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         initialLogLabel(loglabel, game.log.lastOrNull() ?: "")
     }
 
+    override fun refreshAfterSelect() {
+        val game = rootService.currentGame ?: return
+        val latestLogEntry = game.log.lastOrNull() ?: ""
+        initialLogLabel(loglabel, game.log[game.log.size - 1])
+    }
+
     /**
      * Called after a player's turn ends.
      *
@@ -752,8 +768,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         selectedHandCard = null
         clickedHandCard = null
     }
-
-
 }
 
 

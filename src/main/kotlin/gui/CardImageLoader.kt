@@ -14,7 +14,6 @@ private const val CARDS_FILE = "card_deck.png"
 
 private const val IMG_HEIGHT = 200
 private const val IMG_WIDTH = 130
-
 /**
  * Provides access to the src/main/resources/card_deck.png file that contains all card images
  * in a raster. The returned [ImageVisual] objects of [frontImageFor], [blankImage],
