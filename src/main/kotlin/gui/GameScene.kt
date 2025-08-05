@@ -12,7 +12,6 @@ import tools.aqua.bgw.components.gamecomponentviews.CardView
 import tools.aqua.bgw.core.Alignment
 import tools.aqua.bgw.style.BorderRadius
 import java.util.*
-
 class GameScene(private val rootService: RootService) : BoardGameScene(1920, 1080), Refreshable {
     private var clickedHandCard: CardView? = null
     private var selectedHandCard: Card? = null
@@ -361,7 +360,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
     }
 
 
-
     private fun selectCard(card: Card, cardView: CardView) {
         val game = rootService.currentGame ?: return
 
@@ -655,4 +653,5 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         clickedHandCard = null
     }
 }
+
 

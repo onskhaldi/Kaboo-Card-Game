@@ -9,13 +9,6 @@ import service.Refreshable
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
 
-/**
- * [MenuScene] that is displayed when the game is finished. It shows the final result of the game
- * as well as the score. Also, there are two buttons: one for starting a new game and one for
- * quitting the program.
- *
- * @param rootService [RootService] instance to access the service methods and entity layer
- */
 class ResultMenuScene(private val rootService: RootService) : MenuScene(400, 1080), Refreshable {
 
     private val headlineLabel = Label(
@@ -97,3 +90,4 @@ class ResultMenuScene(private val rootService: RootService) : MenuScene(400, 108
     }
 
 }
+

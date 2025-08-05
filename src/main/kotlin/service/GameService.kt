@@ -425,7 +425,6 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
 
         } }
 
-
     fun quit() {
         onAllRefreshables { refreshAfterQuit() }
     }
@@ -434,6 +433,7 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
         onAllRefreshables { refreshAfterRestart() }
     }
 }
+
 
 
 

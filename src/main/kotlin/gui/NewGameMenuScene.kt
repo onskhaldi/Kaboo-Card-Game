@@ -8,13 +8,6 @@ import service.RootService
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
 
-/**
- * [MenuScene] that is used for starting a new game. It is displayed directly at program start or reached
- * when "new game" is clicked in [GameFinishedMenuScene]. After providing the names of both players,
- * [startButton] can be pressed. There is also a [quitButton] to end the program.
- *
- * @param rootService [RootService] instance to access the service methods and entity layer
- */
 class NewGameMenuScene(private val rootService: RootService) : MenuScene(400, 1080), Refreshable {
 
     private val headlineLabel = Label(

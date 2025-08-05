@@ -147,6 +147,5 @@ override fun refreshAfterDrawPile(){
         var restartCalled=false
     }
 
-
 }
 

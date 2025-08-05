@@ -245,53 +245,6 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
      * Selects a card depending on the current game phase and the player.
      * Enforces valid selection rules.
      */
-   /* fun selectCard(card: Card) {
-        val game = rootService.currentGame
-        checkNotNull(game) { "Kein aktives Spiel vorhanden." }
-
-        val player = if (game.currentPlayer == 0) game.player1 else game.player2
-        val opponent = if (game.currentPlayer == 0) game.player2 else game.player1
-
-        val allowedPhases = listOf(
-            GamePhase.DRAW_FROM_DECK,
-            GamePhase.DRAW_FROM_PILE,
-
-            GamePhase.PLAY_QUEEN,
-            GamePhase.PLAY_JACK,
-            GamePhase.PLAY_SEVEN_OR_EIGHT,
-            GamePhase.PLAY_NINE_OR_TEN,
-            //GamePhase.SWAP_OR_DISCARD
-        )
-        require(game.state in allowedPhases) {
-            "Kartenauswahl ist in der Phase ${game.state} nicht erlaubt."
-        }
-        val isOwnCard = player.hand.flatten().contains(card)
-        val isOpponentCard = opponent.hand.flatten().contains(card)
-
-
-        when (game.state) {
-            GamePhase.PLAY_JACK,
-            GamePhase.PLAY_QUEEN -> require(isOwnCard || isOpponentCard) {
-                "In dieser Phase darfst du eigene oder gegnerische Karten wählen."
-            }
-            GamePhase.PLAY_NINE_OR_TEN -> require(isOpponentCard) {
-                "In dieser Phase darfst du nur gegnerische Karten wählen."}
-
-            GamePhase.PLAY_SEVEN_OR_EIGHT -> require(isOwnCard) {
-                "Mit 7 oder 8 darfst du nur eigene Karten ansehen."
-            }
-
-            else -> require(isOwnCard) {
-                "Du darfst nur eigene Karten wählen."
-            }
-        }
-        game.selected.clear()
-        game.selected.add(card)
-
-        game.log.add("${player.name} hat eine Karte ausgewählt: ${card.value}.")
-        onAllRefreshables { refreshAfterSelect() }
-    }*/
-
 
     fun selectCard(card: Card) {
         val game = rootService.currentGame
@@ -569,5 +522,6 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
         onAllRefreshables { refreshAfterKnock() }
    }
 }
+
 
 

@@ -9,25 +9,15 @@ import tools.aqua.bgw.style.BorderRadius
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
 
-/**
- * This scene is shown between player turns to inform the next player and allow them to start their turn.
- *
- * @param rootService Reference to the [RootService] that manages game state and logic
- */
 
 class NextPlayerScene(private val rootService: RootService) : MenuScene(800, 500) , Refreshable {
-    // Retrieve the current game instance or throw an error if none is active
     val game = requireNotNull(rootService.currentGame) { "No game is currently active." }
-    // Identify the current player based on the game state's player index
     val currPlayer = when (game.currentPlayer) {
         0-> game.player1
         1 -> game.player2
         else -> throw IllegalStateException(
             "Invalid current player index: ${game.currentPlayer}")
     }
-    /**
-     * * Button to start the player's turn and continue the game
-     */
     private val startTurnButton = Button(
         width = 220,
         height = 80,
@@ -41,9 +31,6 @@ class NextPlayerScene(private val rootService: RootService) : MenuScene(800, 500
         }
         onMouseClicked = { rootService.gameService.startTurn() }
     }
-    /**
-     * Label that greets the current player by name
-     */
     private val playerNameLabel = Label(
         width = 500,
         height = 80,
@@ -62,3 +49,4 @@ class NextPlayerScene(private val rootService: RootService) : MenuScene(800, 500
         addComponents(playerNameLabel, startTurnButton)
     }
 }
+

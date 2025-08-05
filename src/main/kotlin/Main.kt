@@ -9,3 +9,4 @@ fun main() {
     KabooApplication().show()
     println("Application ended. Goodbye")
 }
+

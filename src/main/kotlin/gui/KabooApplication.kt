@@ -1,6 +1,5 @@
 
 package gui
-
 import entity.Player
 import tools.aqua.bgw.core.BoardGameApplication
 import service.Refreshable
@@ -67,3 +66,4 @@ class KabooApplication : BoardGameApplication("Kaboo"), Refreshable {
 
     override fun refreshAfterRestart() { showMenuScene(newGameMenuScene) }
 }
+
