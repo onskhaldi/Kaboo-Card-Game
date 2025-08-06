@@ -69,12 +69,12 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
     /**
      * Executes a card swap, either with own field or with opponent based on the current phase.
      */
-        fun swapCard() {
+    fun swapCard() {
         val game = rootService.currentGame
         checkNotNull(game)
         val player = if (game.currentPlayer == 0) game.player1 else game.player2
         val gegner = if (game.currentPlayer == 0) game.player2 else game.player1
-            when (game.state) {
+        when (game.state) {
             GamePhase.POWERCARD_DRAWN,
             GamePhase.PUNKTCARD_DRAWN,
             GamePhase.DRAW_FROM_PILE -> {
@@ -87,13 +87,13 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
             GamePhase.PLAY_QUEEN, GamePhase.PLAY_JACK -> {
                 swapCardsInternal(game, player, gegner)
             }
-                else -> throw IllegalStateException("In Phase ${game.state} darf nicht getauscht werden.")
+            else -> throw IllegalStateException("In Phase ${game.state} darf nicht getauscht werden.")
         }
     }
     /**
      * Internal logic for swapping cards between two players (for QUEEN and JACK powercards).
      */
-      private fun swapCardsInternal(game: KabooGame, player: Player, gegner: Player) {
+    private fun swapCardsInternal(game: KabooGame, player: Player, gegner: Player) {
         require(game.state == GamePhase.PLAY_QUEEN || game.state == GamePhase.PLAY_JACK||
                 game.state == GamePhase.CONFIRMQUEENSHOW) {
             "Karten dürfen nur mit Dame oder Bube getauscht werden."
@@ -161,7 +161,7 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
      * Handles drawing a card from the draw pile.
      * If it's a powercard, transitions to the respective state.
      */
-       fun drawFromDeck() {
+    fun drawFromDeck() {
         val game = rootService.currentGame
         checkNotNull(game)
 
@@ -498,18 +498,21 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
      * Triggers a knock to initiate the final round of the game.
      * Allowed only once before last round.
      */
-   fun knock() {
+    fun knock() {
         val game = rootService.currentGame
         checkNotNull(game) { "No game is currently active" }
         require(game.currentPlayer == 0 || game.currentPlayer == 1) {
             "Ungültiger Spieler-Index: ${game.currentPlayer}"
         }
         if (game.lastRound) return
-       game.state = GamePhase.READYTODRAW
+        game.state = GamePhase.READYTODRAW
         game.lastRound = true
-       game.knockInitiatorIndex = game.currentPlayer
-       game.log.add("${rootService.playerActionService.currentPlayer().name} klopft! Das Spiel endet nach diesem Zug.")
+        game.knockInitiatorIndex = game.currentPlayer
+        game.log.add("${rootService.playerActionService.currentPlayer().name} klopft! Das Spiel endet nach diesem Zug.")
+        //rootService.gameService.endTurn()
         onAllRefreshables { refreshAfterKnock() }
-   }
+    }
 }
+
+
 

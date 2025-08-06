@@ -1,3 +1,4 @@
+
 package gui
 import service.Refreshable
 import entity.*
@@ -13,7 +14,6 @@ import tools.aqua.bgw.core.Alignment
 import tools.aqua.bgw.style.BorderRadius
 import tools.aqua.bgw.visual.ImageVisual
 import java.util.*
-
 /**
  * Main game scene for the Kaboo card game.
  *
@@ -43,7 +43,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         text = "Show starting Cards"
     ).apply {
         visual = ColorVisual(245, 245, 220)
-
         onMouseClicked = {
             rootService.gameService.showStartingCards()
         }
@@ -58,22 +57,19 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         text = "hide starting cards"
     ).apply {
         visual = ColorVisual(245, 245, 220)
-
         onMouseClicked = {
             rootService.gameService.hideStartingCards()
         }
     }
 
     /** Button to draw a card from the draw pile. */
-
     private val drawFromDeckButton = Button(
         posX = 255,
         posY = 1010,
         width = 120,
         height = 45,
         text = "draw from deck",
-
-        ).apply {
+    ).apply {
         visual = ColorVisual(0, 128, 0)
         onMouseClicked = {
             rootService.playerActionService.drawFromDeck()
@@ -88,15 +84,13 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         height = 45,
         text = "knock",
     ).apply {
-        visual = ColorVisual(0, 128, 0) // Dunkelgrün
-
+        visual = ImageVisual("knock.jpg")
         onMouseClicked = {
             rootService.playerActionService.knock()
         }
     }
 
     /** Button to swap a selected card. */
-
     private val swapButton = Button(
         posX = 130,
         posY = 1010,
@@ -110,7 +104,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
                 rootService.playerActionService.swapCard()
                 selectedHandCard = null
                 clickedHandCard = null
-
             } else {
                 println("No card selected for swap")
             }
@@ -124,8 +117,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         width = 120,
         height = 45,
         text = "draw from pile",
-
-        ).apply {
+    ).apply {
         visual = ColorVisual(0, 128, 0)
         onMouseClicked = { rootService.playerActionService.drawFromPile() }
     }
@@ -137,12 +129,10 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         width = 120,
         height = 45,
         text = "discard card",
-
-        ).apply {
+    ).apply {
         visual = ColorVisual(0, 128, 0)
         onMouseClicked = {
             rootService.gameService.discardCard()
-
         }
     }
 
@@ -150,29 +140,30 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
     private val passButton = Button(
         posX = 300,
         posY = 700,
-        width = 120,
+        width = 160,
         height = 45,
         text = "Skip Queen Swap"
-
     ).apply {
-        visual = ColorVisual(0, 128, 0)
+        visual =  ColorVisual(245, 245, 220)
         onMouseClicked = {
             rootService.playerActionService.cancelPowerEffect()
         }
-
-
     }
 
     /** Button to confirm using a power card effect , in case of queenEffect you click on it two times, the first time to see the cards than in case you decided to swap the cards */
     private val confirmPowerButton = Button(
         posX = 300,
         posY = 750,
-        width = 120,
+        width = 160,
         height = 45,
-        text = "Confirm"
-
+        text = "Confirm PowerEffect"
     ).apply {
-        visual = ColorVisual(0, 128, 0)
+        visual = ImageVisual("myButtonImage.png")
+        font = Font(
+            size = 16,
+            fontWeight = Font.FontWeight.BOLD,
+            color = tools.aqua.bgw.core.Color.WHITE
+        )
         onMouseClicked = {
             rootService.playerActionService.confirmChoice()
         }
@@ -184,7 +175,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         posY = 50,
         width = 140,
         height = 60,
-
         alignment = Alignment.CENTER
     ).apply {
         // Gold background
@@ -213,16 +203,15 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
 
     /** Displays the game log. */
     private val loglabel = Label(
-        posX = 200,
-        posY = 800,
-        width = 1100,
-        height = 50,
+        posX = 400,
+        posY = 100,
+        width = 1200,
+        height = 60,
         alignment = Alignment.CENTER
     ).apply {
         visual = ColorVisual(255, 215, 0).apply { style.borderRadius = BorderRadius.SMALL }
         font = Font(size = 28, fontWeight = Font.FontWeight.BOLD)
     }
-
     // --------- CARD AREAS -----------
     /** Player 1's 2×2 hand grid. */
     private val player1Grid = CardSquareView(posX = 150.0, posY = 400.0)   // near "Bart"
@@ -282,7 +271,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         stack: Stack<Card>, stackView: LabeledStackView, cardImageLoader: CardImageLoader
     ) {
         stackView.clear()
-
         stack.asReversed().forEach { card ->
             val cardView = CardView(
                 height = 200,
@@ -352,7 +340,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
      * @param cardImageLoader Loader for card images.
      * @param cardsToShow Optional cards to be revealed regardless of game state.
      */
-
     private fun initialGridView(
         hand: List<Card>,
         handDeckView: CardSquareView,
@@ -361,7 +348,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
     ) {
         val game = rootService.currentGame ?: return
         val shownCards = cardsToShow
-
         val cardViews = hand.map { card ->
             CardView(
                 height = 200,
@@ -378,7 +364,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
                     val isCurrentPlayer =
                         (handDeckView == player1Grid && game.currentPlayer == 0) ||
                                 (handDeckView == player2Grid && game.currentPlayer == 1)
-
                     if (isCurrentPlayer || game.state in listOf(
                             GamePhase.PLAY_QUEEN,
                             GamePhase.PLAY_JACK,
@@ -393,10 +378,8 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
                 }
             }.also { cardMap.add(card to it) }
         }
-
         handDeckView.displayCards(cardViews)
     }
-
 
     /**
      * Handles selecting a card in the UI and forwarding
@@ -404,11 +387,9 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
      */
     private fun selectCard(card: Card, cardView: CardView) {
         val game = rootService.currentGame ?: return
-
         try {
             selectedHandCard = card
             clickedHandCard = cardView
-
             rootService.playerActionService.selectCard(card)
         } catch (e: Exception) {
             println("Card selection failed: ${e.message}")
@@ -417,8 +398,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         }
     }
     // Refreshable Overrides ------
-
-
     /**
      * Called after a new game starts.
      *
@@ -426,27 +405,20 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
      * updates player names, fills both player grids with their starting hands,
      * and shows the initial log message.
      */
-
     override fun refreshAfterStartNewGame() {
         val game = rootService.currentGame ?: return
         cardMap.clear()
         val cardImageLoader = CardImageLoader()
-
         initialdrawPile(game.drawPile, drawPile, cardImageLoader)
         initialdiscardPile(game.playStack, discardPile, cardImageLoader)
-
         val player1Cards = game.player1.hand.flatten().filterNotNull()
         val player2Cards = game.player2.hand.flatten().filterNotNull()
-
         player1NameLabel.text = game.player1.name
         player2NameLabel.text = game.player2.name
-
         initialPlayerNameLabel(player1NameLabel, game.player1.name)
         initialPlayerNameLabel(player2NameLabel, game.player2.name)
-
         initialGridView(player1Cards, player1Grid, cardImageLoader)
         initialGridView(player2Cards, player2Grid, cardImageLoader)
-
         initialLogLabel(loglabel, game.log[game.log.size - 1])
     }
 
@@ -456,15 +428,11 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
      * Updates both player grids so that all starting cards are visible,
      * while keeping the rest of the state unchanged.
      */
-
-
     override fun refreshAfterShowStartingCards() {
         val game = rootService.currentGame ?: return
         val loader = CardImageLoader()
-
         val p1Cards = game.player1.hand.flatten().filterNotNull()
         val p2Cards = game.player2.hand.flatten().filterNotNull()
-
         if (game.currentPlayer == 0) {
             // show ONLY player 1's starting cards
             initialGridView(p1Cards, player1Grid, loader, cardsToShow = game.player1.startingCards)
@@ -475,7 +443,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
             initialGridView(p2Cards, player2Grid, loader, cardsToShow = game.player2.startingCards)
             initialGridView(p1Cards, player1Grid, loader, cardsToShow = emptyList())
         }
-
         initialLogLabel(loglabel, game.log.last())
     }
 
@@ -488,14 +455,11 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
     override fun refreshAfterHideStartingCards() {
         val game = rootService.currentGame ?: return
         val loader = CardImageLoader()
-
         val p1Cards = game.player1.hand.flatten().filterNotNull()
         val p2Cards = game.player2.hand.flatten().filterNotNull()
-
         // hide again: pass no extra cards to show
         initialGridView(p1Cards, player1Grid, loader, cardsToShow = emptyList())
         initialGridView(p2Cards, player2Grid, loader, cardsToShow = emptyList())
-
         initialLogLabel(loglabel, game.log.last())
     }
 
@@ -508,24 +472,20 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
      * @param card1 The first revealed card.
      * @param card2 An optional second revealed card.
      */
-
     override fun refreshAfterShowCards(card1: Card, card2: Card?) {
         val game = rootService.currentGame ?: return
         val cardImageLoader = CardImageLoader()
-
         val cardsToShow = if (game.currentPlayer == 0) {
             game.player1.hand.flatten().filterNotNull()
         } else {
             game.player2.hand.flatten().filterNotNull()
         }
-
         if (game.currentPlayer == 1) {
             initialGridView(cardsToShow, player1Grid, cardImageLoader)
         } else {
             initialGridView(cardsToShow, player2Grid, cardImageLoader)
         }
     }
-
 
     /**
      * Called after hiding cards that were previously revealed
@@ -536,10 +496,8 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
     override fun refreshAfterHideCards() {
         val game = rootService.currentGame ?: return
         val cardImageLoader = CardImageLoader()
-
         val player1Cards = game.player1.hand.flatten().filterNotNull()
         val player2Cards = game.player2.hand.flatten().filterNotNull()
-
         initialGridView(player1Cards, player1Grid, cardImageLoader)
         initialGridView(player2Cards, player2Grid, cardImageLoader)
         initialLogLabel(loglabel, game.log[game.log.size - 1])
@@ -550,11 +508,9 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
      *
      * Updates the draw pile display and appends the latest log entry.
      */
-
     override fun refreshAfterDrawDeck() {
         val game = rootService.currentGame ?: return
         val cardImageLoader = CardImageLoader()
-
         initialdrawPile(game.drawPile, drawPile, cardImageLoader)
         initialLogLabel(loglabel, game.log[game.log.size - 1])
     }
@@ -568,18 +524,13 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
     override fun refreshAfterKnock() {
         val game = rootService.currentGame ?: return
         val cardImageLoader = CardImageLoader()
-
         knockButton.isDisabled = true
-
         val player1Cards = game.player1.hand.flatten().filterNotNull()
         val player2Cards = game.player2.hand.flatten().filterNotNull()
-
         initialGridView(player1Cards, player1Grid, cardImageLoader)
         initialGridView(player2Cards, player2Grid, cardImageLoader)
-
         val knockMsg = game.log.lastOrNull() ?: ""
         val additionalInfo = "Letzte Runde! Jeder Spieler hat noch genau einen Zug."
-
         initialLogLabel(loglabel, "$knockMsg\n$additionalInfo")
     }
 
@@ -609,7 +560,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
             } else {
                 initialGridView(player2HandCards, player2Grid, cardImageLoader)
             }
-
             val topDiscard = game.playStack.peek()
             if (topDiscard != null) {
                 val cardView = CardView(
@@ -624,7 +574,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
                 discardPile.add(cardView)
                 cardMap.add(topDiscard to cardView)
             }
-
             initialLogLabel(loglabel, game.log.lastOrNull() ?: "")
         }
     }
@@ -635,13 +584,10 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
      * Updates the discard pile display to reflect the remaining cards
      * and appends the latest log message.
      */
-
     override fun refreshAfterDrawPile() {
         val game = rootService.currentGame ?: return
         val cardImageLoader = CardImageLoader()
-
         initialdiscardPile(game.playStack, discardPile, cardImageLoader)
-
         val topCard = game.playStack.lastOrNull()
         if (topCard != null) {
             val cardView = CardView(
@@ -666,13 +612,11 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         val game = rootService.currentGame ?: return
         val cardImageLoader = CardImageLoader()
         val topCard: Card?
-
         if (game.currentPlayer == 0) {
             topCard = game.player1.drawnCard
         } else {
             topCard = game.player2.drawnCard
         }
-
         if (topCard != null) {
             val cardView = CardView(
                 width = 120.0,
@@ -695,7 +639,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
      * Updates the affected player grids, refreshes the discard pile
      * (in case the played card was discarded), and clears any selected cards.
      */
-
     override fun refreshAfterConfirmChoice() {
         val game = rootService.currentGame ?: return
         val cardImageLoader = CardImageLoader()
@@ -719,18 +662,16 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
                 front = cardImageLoader.frontImageFor(topCard.suit, topCard.value),
                 back = cardImageLoader.backImage
             ).apply { showFront() }
-
             discardPile.add(topCardView)
             cardMap.add(topCard to topCardView)
         }
-
         selectedHandCard = null
         clickedHandCard = null
         initialLogLabel(loglabel, game.log.lastOrNull() ?: "")
     }
+
     override fun refreshAfterSelect() {
         val game = rootService.currentGame ?: return
-
         confirmPowerButton.isDisabled = when (game.state) {
             GamePhase.PLAY_QUEEN, GamePhase.PLAY_JACK ->
                 !(game.selected.size == 2 && isValidQueenJackSelection(game))
@@ -743,7 +684,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
 
             else -> false // leave it enabled for other phases
         }
-
         initialLogLabel(loglabel, game.log.lastOrNull() ?: "")
     }
 
@@ -752,7 +692,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         val opponent = if (game.currentPlayer == 0) game.player2 else game.player1
         val first = game.selected.getOrNull(0) ?: return false
         val second = game.selected.getOrNull(1) ?: return false
-
         return (player.hand.flatten().contains(first) && opponent.hand.flatten().contains(second)) ||
                 (player.hand.flatten().contains(second) && opponent.hand.flatten().contains(first))
     }
@@ -767,26 +706,21 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         return opponent.hand.flatten().contains(card)
     }
 
-
     /**
      * Called after a player's turn ends.
      *
      * Refreshes both player grids, hides all revealed cards,
      * and clears any current selections.
      */
-
     override fun refreshAfterTurnEnd() {
         val game = rootService.currentGame ?: return
         val cardImageLoader = CardImageLoader()
-
         val player1Cards = game.player1.hand.flatten().filterNotNull()
         val player2Cards = game.player2.hand.flatten().filterNotNull()
-
         initialGridView(player1Cards, player1Grid, cardImageLoader)
         initialGridView(player2Cards, player2Grid, cardImageLoader)
         game.player1.hand.flatten().forEach { it?.isRevealed = false }
         game.player2.hand.flatten().forEach { it?.isRevealed = false }
-
         selectedHandCard = null
         clickedHandCard = null
     }
@@ -799,31 +733,21 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
     override fun refreshAfterStartTurn() {
         val game = rootService.currentGame ?: return
         val cardImageLoader = CardImageLoader()
-
         val player1Cards = game.player1.hand.flatten().filterNotNull()
         val player2Cards = game.player2.hand.flatten().filterNotNull()
-
         initialGridView(player1Cards, player1Grid, cardImageLoader)
         initialGridView(player2Cards, player2Grid, cardImageLoader)
-
         selectedHandCard = null
         clickedHandCard = null
     }
+
     override fun refreshAfterPlayPower() {
         val game = rootService.currentGame ?: return
         val loader = CardImageLoader()
-
         val p1Cards = game.player1.hand.flatten().filterNotNull()
         val p2Cards = game.player2.hand.flatten().filterNotNull()
-
         initialGridView(p1Cards, player1Grid, loader)
         initialGridView(p2Cards, player2Grid, loader)
-
         initialLogLabel(loglabel, game.log.lastOrNull() ?: "")
     }
-
-
 }
-
-
-

@@ -162,7 +162,7 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
 
 
 
-        /**
+    /**
      * Versteckt aufgedeckte Karten während spezieller Spielphasen
      * Beendet ggf. den Zug.
      *
@@ -259,7 +259,7 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
      * @throws NullPointerException wenn keine gezogene Karte vorhanden ist
      */
 
-       fun discardCard() {
+    fun discardCard() {
         val game = rootService.currentGame
         checkNotNull(game) { "Kein aktives Spiel vorhanden." }
         require(game.state == GamePhase.POWERCARD_DRAWN || game.state == GamePhase.PUNKTCARD_DRAWN) {
@@ -268,9 +268,9 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
         val card =player.drawnCard!!
 
         game.playStack.push(card)
-           game.log.add("${player.name} hat ${card.value} of ${card.suit} auf den Ablagestapel gelegt.")
+        game.log.add("${player.name} hat ${card.value} of ${card.suit} auf den Ablagestapel gelegt.")
         onAllRefreshables { refreshAfterDiscard() }
-           game.state = GamePhase.ENDTURN
+        game.state = GamePhase.ENDTURN
         endTurn()
     }
     /**
@@ -278,10 +278,10 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
      * Nur erlaubt in Phase READYTODRAW.
      */
 
-       fun startTurn() {
+    fun startTurn() {
         val game = rootService.currentGame
         checkNotNull(game) { "No game is currently active" }
-       require(game.currentPlayer == 0 || game.currentPlayer == 1)
+        require(game.currentPlayer == 0 || game.currentPlayer == 1)
         { "Ungültiger Spieler-Index: ${game.currentPlayer}" }
         require(game.state == GamePhase.READYTODRAW)
         { "startTurn() darf nur in der Phase DRAW_FROM_DECK aufgerufen werden (aktuelle Phase: ${game.state})" }
@@ -295,37 +295,37 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
      * Kümmert sich um Spielerwechsel, Knock-Logik, und ruft ggf. gameOver() auf.
      */
 
-  fun endTurn() {
-      val game = rootService.currentGame
-      checkNotNull(game) { "No game is currently active" }
-      val player = rootService.playerActionService.currentPlayer()
-      require(game.currentPlayer == 0 || game.currentPlayer == 1)
-      { "Ungültiger Spieler-Index: ${game.currentPlayer}"  }
+    fun endTurn() {
+        val game = rootService.currentGame
+        checkNotNull(game) { "No game is currently active" }
+        val player = rootService.playerActionService.currentPlayer()
+        require(game.currentPlayer == 0 || game.currentPlayer == 1)
+        { "Ungültiger Spieler-Index: ${game.currentPlayer}"  }
 
-      require(game.state == GamePhase.ENDTURN || game.state == GamePhase.KNOCKED) {
-          "endTurn darf nur in der Phase ENDTURN oder KNOCKED aufgerufen werden (aktuell: ${game.state})"
-      }
-      if (game.state == GamePhase.FINISHED) return
-      if (game.drawPile.isEmpty()) {
-          game.lastRound = true
-          game.state = GamePhase.ENDTURN
-          game.log.add("Der Nachziehstapel ist leer. Das Spiel endet sofort.")
-          gameOver()  }
+        require(game.state == GamePhase.ENDTURN || game.state == GamePhase.KNOCKED) {
+            "endTurn darf nur in der Phase ENDTURN oder KNOCKED aufgerufen werden (aktuell: ${game.state})"
+        }
+        if (game.state == GamePhase.FINISHED) return
+        if (game.drawPile.isEmpty()) {
+            game.lastRound = true
+            game.state = GamePhase.ENDTURN
+            game.log.add("Der Nachziehstapel ist leer. Das Spiel endet sofort.")
+            gameOver()  }
 
         if (game.lastRound && game.currentPlayer == game.knockInitiatorIndex) {
             game.log.add("Letzter Zug des Klopfenden. Spiel endet.")
             gameOver()
             return
 
-  }
-      game.currentPlayer = 1 - game.currentPlayer
-      player.drawnCard = null
-      game.selected.clear()
-      game.log.add("Zug beendet. Jetzt ist $rootService.playerActionService.currentPlayer().name} am Zug.")
-      game.state= GamePhase.READYTODRAW
+        }
+        game.currentPlayer = 1 - game.currentPlayer
+        player.drawnCard = null
+        game.selected.clear()
+        game.log.add("Zug beendet. Jetzt ist $rootService.playerActionService.currentPlayer().name} am Zug.")
+        game.state= GamePhase.READYTODRAW
 
         onAllRefreshables { refreshAfterTurnEnd() }
-  }
+    }
 
     /**
      * Erstellt und mischt ein vollständiges 52-Karten-Deck.
@@ -376,7 +376,7 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
      * @param player Der Spieler
      * @return Gesamtpunktzahl des Spielers
      */
- fun scoreOf(player: Player): Int {
+    fun scoreOf(player: Player): Int {
         return player.hand.flatten().filterNotNull().sumOf { card ->
             when (card.value) {
                 CardValue.KING -> -1
@@ -448,7 +448,6 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
     }
 
 }
-
 
 
 
