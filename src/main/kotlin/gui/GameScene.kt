@@ -90,6 +90,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         }
     }
 
+
     /** Button to swap a selected card. */
     private val swapButton = Button(
         posX = 130,

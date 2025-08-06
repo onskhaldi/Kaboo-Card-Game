@@ -15,6 +15,7 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
         val game = checkNotNull(rootService.currentGame) { "Kein Spiel aktiv." }
         return if (game.currentPlayer == 0) game.player1 else game.player2
     }
+
     /**
      * Executes the logic for playing a power card depending on its type.
      * Updates game state and logs the action.
@@ -48,6 +49,7 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
                     game.log.add("${player.name} sieht mit QUEEN  Karte von ${gegner.name} und darf austauschen")
 
                 }
+
                 CardValue.SEVEN, CardValue.EIGHT -> {
                     game.state = GamePhase.PLAY_SEVEN_OR_EIGHT
                     game.log.add("${player.name} darf mit ${card.value} eigene Karte ansehen.")
@@ -60,12 +62,16 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
                                 "(${gegner.name}) ansehen."
                     )
                 }
+
                 else -> return
             }
         }
         if (card != null) {
-            game.playStack.push(card) }
-        onAllRefreshables { refreshAfterPlayPower() } }
+            game.playStack.push(card)
+        }
+        onAllRefreshables { refreshAfterPlayPower() }
+    }
+
     /**
      * Executes a card swap, either with own field or with opponent based on the current phase.
      */
@@ -84,18 +90,23 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
                     throw IllegalStateException("Zum Tauschen muss genau eine eigene Karte ausgewählt werden.")
                 }
             }
+
             GamePhase.PLAY_QUEEN, GamePhase.PLAY_JACK -> {
                 swapCardsInternal(game, player, gegner)
             }
+
             else -> throw IllegalStateException("In Phase ${game.state} darf nicht getauscht werden.")
         }
     }
+
     /**
      * Internal logic for swapping cards between two players (for QUEEN and JACK powercards).
      */
     private fun swapCardsInternal(game: KabooGame, player: Player, gegner: Player) {
-        require(game.state == GamePhase.PLAY_QUEEN || game.state == GamePhase.PLAY_JACK||
-                game.state == GamePhase.CONFIRMQUEENSHOW) {
+        require(
+            game.state == GamePhase.PLAY_QUEEN || game.state == GamePhase.PLAY_JACK ||
+                    game.state == GamePhase.CONFIRMQUEENSHOW
+        ) {
             "Karten dürfen nur mit Dame oder Bube getauscht werden."
         }
         var posCurrentPlayer: Pair<Int, Int>? = null
@@ -104,12 +115,11 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
 
         if (player.hand.flatten().contains(game.selected[0])) {
 
-            posCurrentPlayer = findCardPositionInHand(player, game.selected[0] )
-            posOppPlayer = findCardPositionInHand(gegner, game.selected[1] )
-        }
-        else  {
-            posCurrentPlayer = findCardPositionInHand(player, game.selected[1] )
-            posOppPlayer = findCardPositionInHand(gegner, game.selected[0] )
+            posCurrentPlayer = findCardPositionInHand(player, game.selected[0])
+            posOppPlayer = findCardPositionInHand(gegner, game.selected[1])
+        } else {
+            posCurrentPlayer = findCardPositionInHand(player, game.selected[1])
+            posOppPlayer = findCardPositionInHand(gegner, game.selected[0])
 
         }
 
@@ -165,7 +175,7 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
         val game = rootService.currentGame
         checkNotNull(game)
 
-        if (game.drawPile.isEmpty()){
+        if (game.drawPile.isEmpty()) {
             rootService.gameService.endTurn()
         }
 
@@ -177,9 +187,9 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
 
         currentPlayer().drawnCard = card
 
-        game.state = GamePhase. DRAW_FROM_DECK
+        game.state = GamePhase.DRAW_FROM_DECK
         if (card.isPowerCard()) {
-            card.isPowercard =true
+            card.isPowercard = true
             game.log.add("${currentPlayer().name} hat eine Powerkarte (${card.value}) vom Nachziehstapel gezogen.")
             game.state = GamePhase.POWERCARD_DRAWN
 
@@ -189,13 +199,14 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
             game.state = GamePhase.PUNKTCARD_DRAWN
         }
 
-        if (game.drawPile.isEmpty()){
+        if (game.drawPile.isEmpty()) {
             game.lastRound = true
         }
 
 
         onAllRefreshables { refreshAfterDrawDeck() }
     }
+
     /**
      * Handles drawing the top card from the play/discard pile.
      */
@@ -205,7 +216,7 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
         require(game.playStack.isNotEmpty()) {
             "Der Ablagestapel ist leer – es kann keine Karte gezogen werden."
         }
-        require(game.state==GamePhase. READYTODRAW) {
+        require(game.state == GamePhase.READYTODRAW) {
             "you must draw"
         }
 
@@ -215,6 +226,7 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
         game.log.add("${currentPlayer().name} hat die oberste Karte vom Ablagestapel gezogen: ${topCard.value}.")
         onAllRefreshables { refreshAfterDrawPile() }
     }
+
     /**
      * Selects a card depending on the current game phase and the player.
      * Enforces valid selection rules.
@@ -306,8 +318,7 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
      * May lead to showing, swapping, or ending the turn.
      */
 
-    fun confirmChoice()
-    {
+    fun confirmChoice() {
         val game = rootService.currentGame!!
         val selected = game.selected
 
@@ -327,11 +338,13 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
 
 
             GamePhase.PLAY_QUEEN -> {
-                require(selected.size == 2){ " SIZE 2." }
-                require ((player.hand.flatten().contains(selected[0]) &&
-                        opponent.hand.flatten().contains(selected[1]) ) ||
-                        (player.hand.flatten().contains(selected[1]) &&
-                                opponent.hand.flatten().contains(selected[0]) )){ "DIFFERENT OWNERS ." }
+                require(selected.size == 2) { " SIZE 2." }
+                require(
+                    (player.hand.flatten().contains(selected[0]) &&
+                            opponent.hand.flatten().contains(selected[1])) ||
+                            (player.hand.flatten().contains(selected[1]) &&
+                                    opponent.hand.flatten().contains(selected[0]))
+                ) { "DIFFERENT OWNERS ." }
                 confirmQueenShow(selected[0], selected[1])
                 game.state = GamePhase.PLAY_QUEEN
                 game.state = GamePhase.CONFIRMQUEENSHOW
@@ -344,7 +357,7 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
 
             GamePhase.PLAY_SEVEN_OR_EIGHT -> {
                 require(selected.size == 1)
-                require (player.hand.flatten().contains(selected[0]) ){ "I AM OWNER ." }
+                require(player.hand.flatten().contains(selected[0])) { "I AM OWNER ." }
 
                 val drawn = player.drawnCard
                 if (drawn != null) {
@@ -358,7 +371,7 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
 
             GamePhase.PLAY_NINE_OR_TEN -> {
                 require(selected.size == 1)
-                require( opponent.hand.flatten().contains(selected[0]))
+                require(opponent.hand.flatten().contains(selected[0]))
                 { "Die ausgewählte Karte gehört nicht dem Gegner." }
 
                 val drawn = player.drawnCard
@@ -372,13 +385,15 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
             }
 
             GamePhase.PLAY_JACK -> {
-                require(selected.size == 2){
+                require(selected.size == 2) {
                     " SIZE 2."
                 }
-                require ((player.hand.flatten().contains(selected[0]) &&
-                        opponent.hand.flatten().contains(selected[1]) ) ||
-                        (player.hand.flatten().contains(selected[1]) &&
-                                opponent.hand.flatten().contains(selected[0]) )){ "DIFFERENT OWNERS ." }
+                require(
+                    (player.hand.flatten().contains(selected[0]) &&
+                            opponent.hand.flatten().contains(selected[1])) ||
+                            (player.hand.flatten().contains(selected[1]) &&
+                                    opponent.hand.flatten().contains(selected[0]))
+                ) { "DIFFERENT OWNERS ." }
                 val drawn = player.drawnCard
                 if (drawn != null) {
                     game.playStack.push(drawn)
@@ -409,6 +424,7 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
         }
         return null
     }
+
     /**
      * Executes JACK effect: blind swap of cards between players.
      */
@@ -428,6 +444,7 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
         game.state = GamePhase.CONFIRMQUEENSHOW
 
     }
+
     /**
      * Finalizes the QUEEN swap after the cards have been viewed.
      */
@@ -483,17 +500,19 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
      */
     private fun playSevenOrEightEffect(card: Card) {
         val game = rootService.currentGame
-        checkNotNull(game) {"Kein aktives Spiel vorhanden."}
+        checkNotNull(game) { "Kein aktives Spiel vorhanden." }
         rootService.gameService.showCards(card)
     }
+
     /**
      * Executes NINE or TEN effect: reveals a selected opponent's card.
      */
-    private fun playNineOrTenEffect(card: Card)  {
+    private fun playNineOrTenEffect(card: Card) {
         val game = rootService.currentGame
-        checkNotNull(game) {"Kein aktives Spiel vorhanden."}
+        checkNotNull(game) { "Kein aktives Spiel vorhanden." }
         rootService.gameService.showCards(card)
     }
+
     /**
      * Triggers a knock to initiate the final round of the game.
      * Allowed only once before last round.
@@ -504,15 +523,21 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
         require(game.currentPlayer == 0 || game.currentPlayer == 1) {
             "Ungültiger Spieler-Index: ${game.currentPlayer}"
         }
-        if (game.lastRound) return
-        game.state = GamePhase.READYTODRAW
+        if (game.lastRound) return  // nobody else may knock now
+
+        val knockerName = rootService.playerActionService.currentPlayer().name
         game.lastRound = true
         game.knockInitiatorIndex = game.currentPlayer
-        game.log.add("${rootService.playerActionService.currentPlayer().name} klopft! Das Spiel endet nach diesem Zug.")
-        //rootService.gameService.endTurn()
+        game.state = GamePhase.ENDTURN
+        game.log.add("$knockerName klopft! Alle anderen Spieler haben noch genau einen Zug.")
+
         onAllRefreshables { refreshAfterKnock() }
+
+       rootService.gameService.endTurn()
     }
+
 }
+
 
 
 

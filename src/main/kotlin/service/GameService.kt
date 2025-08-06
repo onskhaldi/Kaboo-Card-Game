@@ -195,32 +195,6 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
      * @throws IllegalStateException wenn falsche Spielphase
      */
 
-    /*fun showCards(card1: Card, card2: Card? = null) {
-
-        val game = rootService.currentGame
-        checkNotNull(game) { "No game is currently active." }
-        require(game.state in listOf(
-            GamePhase.PLAY_QUEEN,
-            GamePhase.PLAY_SEVEN_OR_EIGHT,
-            GamePhase.PLAY_NINE_OR_TEN
-        )) {
-            "Karten dürfen nur bei bestimmten Powerkarten gezeigt werden. Aktuelle Phase: ${game.state}"
-        }
-
-        card1.isRevealed = true
-        if (card2 != null) {
-            card2.isRevealed = true
-        }
-
-        val currentPlayer = if (game.currentPlayer == 0) game.player1 else game.player2
-        val card2Info = card2?.let { " und ${it.value}" } ?: ""
-        game.log.add("${currentPlayer.name} sieht ${card1.value}$card2Info.")
-        game.state = GamePhase.SHOW_CARDS
-        onAllRefreshables { refreshAfterShowCards(card1,card2) }
-    }*/
-
-
-
     fun showCards(card1: Card, card2: Card? = null) {
         val game = rootService.currentGame
         checkNotNull(game) { "No game is currently active." }
@@ -312,17 +286,20 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
             game.log.add("Der Nachziehstapel ist leer. Das Spiel endet sofort.")
             gameOver()  }
 
-        if (game.lastRound && game.currentPlayer == game.knockInitiatorIndex) {
-            game.log.add("Letzter Zug des Klopfenden. Spiel endet.")
+        val next = 1 - game.currentPlayer  // for 2 players
+
+        if (game.lastRound && next == game.knockInitiatorIndex) {
+            game.log.add("Alle anderen Spieler haben nach dem Klopfen ihren letzten Zug gespielt. Spiel endet.")
             gameOver()
             return
-
         }
-        game.currentPlayer = 1 - game.currentPlayer
-        player.drawnCard = null
+
+        // Normal handover
+        game.currentPlayer = next
+        rootService.playerActionService.currentPlayer().drawnCard = null
         game.selected.clear()
-        game.log.add("Zug beendet. Jetzt ist $rootService.playerActionService.currentPlayer().name} am Zug.")
-        game.state= GamePhase.READYTODRAW
+        game.state = GamePhase.READYTODRAW
+        game.log.add("Zug beendet. Jetzt ist ${rootService.playerActionService.currentPlayer().name} am Zug.")
 
         onAllRefreshables { refreshAfterTurnEnd() }
     }

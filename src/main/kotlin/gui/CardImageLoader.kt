@@ -1,5 +1,4 @@
 package gui
-
 import entity.CardSuit
 import entity.CardValue
 import tools.aqua.bgw.visual.ImageVisual
