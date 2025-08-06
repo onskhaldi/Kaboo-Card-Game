@@ -148,7 +148,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         posY = 700,
         width = 120,
         height = 45,
-        text = "Skip Swap"
+        text = "Skip Queen Swap"
 
     ).apply {
         visual = ColorVisual(0, 128, 0)
