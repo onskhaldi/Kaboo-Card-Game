@@ -446,6 +446,7 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
         rootService.currentGame = null
         onAllRefreshables { refreshAfterRestart() }
     }
+
 }
 
 

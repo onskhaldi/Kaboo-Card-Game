@@ -12,7 +12,6 @@ import tools.aqua.bgw.components.gamecomponentviews.CardView
 import tools.aqua.bgw.core.Alignment
 import tools.aqua.bgw.style.BorderRadius
 import tools.aqua.bgw.visual.ImageVisual
-import java.awt.Color
 import java.util.*
 
 /**
@@ -28,8 +27,10 @@ import java.util.*
 class GameScene(private val rootService: RootService) : BoardGameScene(1920, 1080), Refreshable {
     /** Last clicked card's [CardView], if any. */
     private var clickedHandCard: CardView? = null
+
     /** Last selected card's [Card] data, if any. */
     private var selectedHandCard: Card? = null
+
     /** Loader for all card images used in the game. */
     private val cardImages = CardImageLoader()
     // -------------BUTTONS-------------
@@ -47,6 +48,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
             rootService.gameService.showStartingCards()
         }
     }
+
     /** Button to hide both players' starting cards again. */
     private val hideStartingButton = Button(
         posX = 700,
@@ -61,6 +63,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
             rootService.gameService.hideStartingCards()
         }
     }
+
     /** Button to draw a card from the draw pile. */
 
     private val drawFromDeckButton = Button(
@@ -91,6 +94,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
             rootService.playerActionService.knock()
         }
     }
+
     /** Button to swap a selected card. */
 
     private val swapButton = Button(
@@ -158,6 +162,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
 
 
     }
+
     /** Button to confirm using a power card effect , in case of queenEffect you click on it two times, the first time to see the cards than in case you decided to swap the cards */
     private val confirmPowerButton = Button(
         posX = 300,
@@ -189,6 +194,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         // Black text for contrast
         font = Font(size = 28, fontWeight = Font.FontWeight.BOLD, color = tools.aqua.bgw.core.Color(0, 0, 0))
     }
+
     /** Displays player 2's name. */
     private val player2NameLabel = Label(
         posX = 1770,
@@ -220,6 +226,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
     // --------- CARD AREAS -----------
     /** Player 1's 2×2 hand grid. */
     private val player1Grid = CardSquareView(posX = 150.0, posY = 400.0)   // near "Bart"
+
     /** Player 2's 2×2 hand grid. */
     private val player2Grid = CardSquareView(posX = 1700.0, posY = 700.0) // near "Zoidberg"
 
@@ -232,6 +239,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
     ).apply {
         visual = ColorVisual(11, 94, 28)
     }
+
     /** Discard pile view. */
     private val discardPile = LabeledStackView(
         posX = 1200,
@@ -262,7 +270,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
             drawPile,
             player1Grid,
             loglabel,
-            player2Grid,passButton,
+            player2Grid, passButton,
         )
     }
 
@@ -310,6 +318,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
             cardMap.add(card to cardView)
         }
     }
+
     /** Sets up a player's name label with bold text. */
     private fun initialPlayerNameLabel(label: Label, text: String) {
         label.text = text
@@ -326,6 +335,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
             fontWeight = Font.FontWeight.BOLD
         )
     }
+
     /** Sets up the game log label. */
     private fun initialLogLabel(label: Label, text: String) {
         label.text = text
@@ -350,8 +360,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         cardsToShow: List<Card> = emptyList()
     ) {
         val game = rootService.currentGame ?: return
-
-        // Nur das verwenden, was der Aufrufer explizit anzeigen will
         val shownCards = cardsToShow
 
         val cardViews = hand.map { card ->
@@ -388,7 +396,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
 
         handDeckView.displayCards(cardViews)
     }
-
 
 
     /**
@@ -471,6 +478,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
 
         initialLogLabel(loglabel, game.log.last())
     }
+
     /**
      * Called after the "Hide starting cards" action is triggered.
      *
@@ -620,6 +628,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
             initialLogLabel(loglabel, game.log.lastOrNull() ?: "")
         }
     }
+
     /**
      * Called after a player draws from the discard pile.
      *
@@ -678,6 +687,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         }
         initialLogLabel(loglabel, game.log[game.log.size - 1])
     }
+
     /**
      * Called after the "Confirm choice" button is pressed
      * during a power card effect.
@@ -718,12 +728,45 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         clickedHandCard = null
         initialLogLabel(loglabel, game.log.lastOrNull() ?: "")
     }
-
     override fun refreshAfterSelect() {
         val game = rootService.currentGame ?: return
-        val latestLogEntry = game.log.lastOrNull() ?: ""
-        initialLogLabel(loglabel, game.log[game.log.size - 1])
+
+        confirmPowerButton.isDisabled = when (game.state) {
+            GamePhase.PLAY_QUEEN, GamePhase.PLAY_JACK ->
+                !(game.selected.size == 2 && isValidQueenJackSelection(game))
+
+            GamePhase.PLAY_SEVEN_OR_EIGHT ->
+                !(game.selected.size == 1 && isOwnCard(game, game.selected[0]))
+
+            GamePhase.PLAY_NINE_OR_TEN ->
+                !(game.selected.size == 1 && isOpponentCard(game, game.selected[0]))
+
+            else -> false // leave it enabled for other phases
+        }
+
+        initialLogLabel(loglabel, game.log.lastOrNull() ?: "")
     }
+
+    private fun isValidQueenJackSelection(game: KabooGame): Boolean {
+        val player = if (game.currentPlayer == 0) game.player1 else game.player2
+        val opponent = if (game.currentPlayer == 0) game.player2 else game.player1
+        val first = game.selected.getOrNull(0) ?: return false
+        val second = game.selected.getOrNull(1) ?: return false
+
+        return (player.hand.flatten().contains(first) && opponent.hand.flatten().contains(second)) ||
+                (player.hand.flatten().contains(second) && opponent.hand.flatten().contains(first))
+    }
+
+    private fun isOwnCard(game: KabooGame, card: Card): Boolean {
+        val player = if (game.currentPlayer == 0) game.player1 else game.player2
+        return player.hand.flatten().contains(card)
+    }
+
+    private fun isOpponentCard(game: KabooGame, card: Card): Boolean {
+        val opponent = if (game.currentPlayer == 0) game.player2 else game.player1
+        return opponent.hand.flatten().contains(card)
+    }
+
 
     /**
      * Called after a player's turn ends.
@@ -766,6 +809,20 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         selectedHandCard = null
         clickedHandCard = null
     }
+    override fun refreshAfterPlayPower() {
+        val game = rootService.currentGame ?: return
+        val loader = CardImageLoader()
+
+        val p1Cards = game.player1.hand.flatten().filterNotNull()
+        val p2Cards = game.player2.hand.flatten().filterNotNull()
+
+        initialGridView(p1Cards, player1Grid, loader)
+        initialGridView(p2Cards, player2Grid, loader)
+
+        initialLogLabel(loglabel, game.log.lastOrNull() ?: "")
+    }
+
+
 }
 
 

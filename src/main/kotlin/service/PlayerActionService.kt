@@ -128,33 +128,7 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
         game.state = GamePhase.ENDTURN
         rootService.gameService.endTurn()
     }
-    /**
-     * Swaps a drawn card with a selected card from the player's own hand.
-     */
-    /*private fun swapWithOwnField(game: KabooGame, player: Player) {
-        require(
-            game.state == GamePhase.POWERCARD_DRAWN ||
-                    game.state == GamePhase.PUNKTCARD_DRAWN ||
-                    game.state == GamePhase.DRAW_FROM_PILE
-        )
-        {
-            "Tauschen ist nur direkt nach dem Ziehen einer Karte erlaubt."
-        }
-        val drawncard = player.drawnCard
 
-        val pos = findCardPositionInHand(player, game.selected[0])
-        requireNotNull(pos) { "Karte nicht im Handfeld gefunden." }
-        val (row, col) = pos
-
-        player.hand[row][col] = drawncard
-        game.playStack.push(game.selected[0])
-        player.drawnCard = null
-        game.log.add("${player.name} hat ${drawncard?.value} mit ${game.selected[0].value} getauscht .")
-
-        onAllRefreshables { refreshAfterSwap() }
-        game.state = GamePhase.ENDTURN
-        rootService.gameService.endTurn()
-    }*/
     private fun swapWithOwnField(game: KabooGame, player: Player) {
         require(
             game.state == GamePhase.POWERCARD_DRAWN ||
@@ -177,7 +151,7 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
         player.hand[row][col] = drawncard          // gezogene Karte kommt ins Feld
         player.drawnCard = null
 
-        game.log.add("${player.name} hat ${drawncard.value} mit ${selectedCard.value} getauscht.")
+        game.log.add("${player.name} hat ${drawncard.value} mit seine karte getauscht.")
         onAllRefreshables { refreshAfterSwap() }
         game.state = GamePhase.ENDTURN
         rootService.gameService.endTurn()
@@ -256,6 +230,7 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
         val isOwnCard = player.hand.flatten().contains(card)
         val isOpponentCard = opponent.hand.flatten().contains(card)
 
+
         val allowedPhases = listOf(
             GamePhase.DRAW_FROM_DECK,
             GamePhase.DRAW_FROM_PILE,
@@ -282,14 +257,16 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
                     "Du darfst nur zwei Karten wählen."
                 }
 
-                if (game.selected.isNotEmpty()) {
-                    val alreadySelected = game.selected[0]
-                    val bothOwn = player.hand.flatten().contains(card) && player.hand.flatten().contains(alreadySelected)
-                    val bothOpponent = opponent.hand.flatten().contains(card) && opponent.hand.flatten().contains(alreadySelected)
-                    require(!bothOwn && !bothOpponent) {
+                if (game.selected.size == 1) {
+                    val first = game.selected[0]
+                    val valid =
+                        (player.hand.flatten().contains(first) && opponent.hand.flatten().contains(card)) ||
+                                (opponent.hand.flatten().contains(first) && player.hand.flatten().contains(card))
+                    require(valid) {
                         "Du musst eine eigene und eine gegnerische Karte wählen."
                     }
                 }
+
 
                 game.selected.add(card)
             }
@@ -320,7 +297,7 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
             }
         }
 
-        game.log.add("${player.name} hat eine Karte ausgewählt: ${card.value}.")
+        game.log.add("${player.name} hat eine Karte ausgewählt")
         onAllRefreshables { refreshAfterSelect() }
     }
 
@@ -435,12 +412,13 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
     /**
      * Executes JACK effect: blind swap of cards between players.
      */
-    private  fun playJackEffect() {
+    private fun playJackEffect() {
         val game = rootService.currentGame!!
+        val actingPlayer = currentPlayer() // capture before swap
         swapCard()
-        game.log.add("${currentPlayer().name} hat mit Bube blind eine Karte getauscht.")
-
+        game.log.add("${actingPlayer.name} hat mit Bube blind eine Karte getauscht.")
     }
+
     /**
      * Executes QUEEN card effect: show 2 cards (own and opponent), then confirm swap.
      */
