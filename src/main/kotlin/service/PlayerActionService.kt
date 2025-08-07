@@ -26,12 +26,13 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
         require(game.state == GamePhase.POWERCARD_DRAWN) {
             "Powerkarten dürfen nur direkt nach dem Ziehen gespielt werden)."
         }
-        require(game.currentPlayer == 1 || game.currentPlayer == 0) { "There is no active player: $game expected 1 or 0" }
+        require(game.currentPlayer == 1 || game.currentPlayer == 0)
+        { "There is no active player: $game expected 1 or 0" }
 
         val player = if (game.currentPlayer == 0) game.player1 else game.player2
         val gegner = if (game.currentPlayer == 0) game.player2 else game.player1
 
-        var card = player.drawnCard
+        val card = player.drawnCard
         require(card?.isPowerCard() == true) {
             "Die übergebene Karte ist keine Powerkarte."
         }
@@ -66,9 +67,9 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
                 else -> return
             }
         }
-        if (card != null) {
+
             game.playStack.push(card)
-        }
+
         onAllRefreshables { refreshAfterPlayPower() }
     }
 
@@ -319,7 +320,8 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
      */
 
     fun confirmChoice() {
-        val game = rootService.currentGame!!
+        val game = rootService.currentGame
+        checkNotNull(game)
         val selected = game.selected
 
 
@@ -429,7 +431,8 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
      * Executes JACK effect: blind swap of cards between players.
      */
     private fun playJackEffect() {
-        val game = rootService.currentGame!!
+        val game = rootService.currentGame
+        checkNotNull(game)
         val actingPlayer = currentPlayer() // capture before swap
         swapCard()
         game.log.add("${actingPlayer.name} hat mit Bube blind eine Karte getauscht.")
@@ -439,7 +442,8 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
      * Executes QUEEN card effect: show 2 cards (own and opponent), then confirm swap.
      */
     private fun confirmQueenShow(cardA: Card, cardB: Card) {
-        val game = rootService.currentGame!!
+        val game = rootService.currentGame
+        checkNotNull(game)
         rootService.gameService.showCards(cardA, cardB)
         game.state = GamePhase.CONFIRMQUEENSHOW
 
@@ -449,7 +453,8 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
      * Finalizes the QUEEN swap after the cards have been viewed.
      */
     fun confirmQueenSwap() {
-        val game = rootService.currentGame!!
+        val game = rootService.currentGame
+        checkNotNull(game)
         require(game.state == GamePhase.CONFIRMQUEENSHOW) {
             "player saw the cards"
         }

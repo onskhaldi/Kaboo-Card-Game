@@ -47,7 +47,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
             rootService.gameService.showStartingCards()
         }
     }
-
     /** Button to hide both players' starting cards again. */
     private val hideStartingButton = Button(
         posX = 700,
@@ -84,12 +83,11 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         height = 45,
         text = "knock",
     ).apply {
-        visual = ImageVisual("knock.jpg")
+        visual = ColorVisual(0, 128, 0)
         onMouseClicked = {
             rootService.playerActionService.knock()
         }
     }
-
 
     /** Button to swap a selected card. */
     private val swapButton = Button(
@@ -151,7 +149,10 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         }
     }
 
-    /** Button to confirm using a power card effect , in case of queenEffect you click on it two times, the first time to see the cards than in case you decided to swap the cards */
+    /** Button to confirm using a power card effect ,
+     *  in case of queenEffect you click on it two times,
+     *  the first time to see the cards than in case you
+     *  decided to swap the cards */
     private val confirmPowerButton = Button(
         posX = 300,
         posY = 750,
@@ -159,12 +160,8 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         height = 45,
         text = "Confirm PowerEffect"
     ).apply {
-        visual = ImageVisual("myButtonImage.png")
-        font = Font(
-            size = 16,
-            fontWeight = Font.FontWeight.BOLD,
-            color = tools.aqua.bgw.core.Color.WHITE
-        )
+        visual = ColorVisual(245, 245, 220)
+
         onMouseClicked = {
             rootService.playerActionService.confirmChoice()
         }
@@ -317,13 +314,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         )
     }
 
-    private fun initialCurrentPlayerNameLabel(label: Label, text: String) {
-        label.text = text
-        label.font = Font(
-            size = 28,
-            fontWeight = Font.FontWeight.BOLD
-        )
-    }
+
 
     /** Sets up the game log label. */
     private fun initialLogLabel(label: Label, text: String) {

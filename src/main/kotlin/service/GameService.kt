@@ -371,7 +371,9 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
      * @throws IllegalStateException wenn falscher Zustand oder Spiel nicht in letzter Runde ist
      */
     fun gameOver() {
-        val game = rootService.currentGame ?: throw IllegalStateException("Kein aktives Spiel vorhanden.")
+        val game = rootService.currentGame
+        checkNotNull(game) { "Kein aktives Spiel vorhanden." }
+
         if (game.state != GamePhase.ENDTURN) {
             throw IllegalStateException("getScore darf nur in der GamePhase ENDTURN aufgerufen werden.")
         }
