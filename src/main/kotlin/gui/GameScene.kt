@@ -241,7 +241,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
     private val cardMap: BidirectionalMap<Card, CardView> = BidirectionalMap()
 
     init {
-        background = ImageVisual("tapis.PNG")
+        background = ImageVisual("tapis.png")
         addComponents(
             player1NameLabel,
             player2NameLabel,
