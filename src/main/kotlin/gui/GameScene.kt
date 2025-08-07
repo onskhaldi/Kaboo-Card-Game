@@ -378,7 +378,8 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
      * the selection to the [RootService].
      */
     private fun selectCard(card: Card, cardView: CardView) {
-        val game = rootService.currentGame ?: return
+        val game = rootService.currentGame
+        checkNotNull(game)
         try {
             selectedHandCard = card
             clickedHandCard = cardView

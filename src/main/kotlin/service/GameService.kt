@@ -144,10 +144,11 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
      * @param game Das aktuelle Spiel
      * @param player Der Spieler, dessen Karten gezeigt werden
      */
-
-
     private  fun revealBottomCards(game: KabooGame, player: Player) {
-        player.startingCards = mutableListOf(player.hand[1][0]!!, player.hand[1][1]!!)
+        player.startingCards = mutableListOf(
+            requireNotNull(player.hand[1][0]) { "Bottom left card must not be null" },
+            requireNotNull(player.hand[1][1]) { "Bottom right card must not be null" }
+        )
 
         if (game.state==GamePhase.PLAYERS_ADDED) {
             game.state = GamePhase.SHOW_STARTING_HANDS_1
@@ -236,11 +237,12 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
     fun discardCard() {
         val game = rootService.currentGame
         checkNotNull(game) { "Kein aktives Spiel vorhanden." }
-        require(game.state == GamePhase.POWERCARD_DRAWN || game.state == GamePhase.PUNKTCARD_DRAWN) {
-            "discardCard darf nur in der GamePhase POWERCARD_DRAWN oder NORMALCARD_DRAWN aufgerufen werden." }
+        require(game.state == GamePhase.POWERCARD_DRAWN ||
+                game.state == GamePhase.PUNKTCARD_DRAWN) {
+            "discardCard darf nur in der GamePhase POWERCARD_DRAWN " + "oder NORMALCARD_DRAWN aufgerufen werden." }
         val player =rootService.playerActionService.currentPlayer()
-        val card =player.drawnCard!!
-
+        val card = requireNotNull(player.drawnCard)
+        { "Keine gezogene Karte zum Ablegen vorhanden." }
         game.playStack.push(card)
         game.log.add("${player.name} hat ${card.value} of ${card.suit} auf den Ablagestapel gelegt.")
         onAllRefreshables { refreshAfterDiscard() }
@@ -272,7 +274,6 @@ class GameService (private val rootService: RootService): AbstractRefreshingServ
     fun endTurn() {
         val game = rootService.currentGame
         checkNotNull(game) { "No game is currently active" }
-        val player = rootService.playerActionService.currentPlayer()
         require(game.currentPlayer == 0 || game.currentPlayer == 1)
         { "Ungültiger Spieler-Index: ${game.currentPlayer}"  }
 

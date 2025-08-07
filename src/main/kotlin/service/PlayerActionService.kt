@@ -324,7 +324,6 @@ class PlayerActionService (private val rootService: RootService) : AbstractRefre
         checkNotNull(game)
         val selected = game.selected
 
-
         val player = if (game.currentPlayer == 0) game.player1 else game.player2
         val opponent = if (game.currentPlayer == 0) game.player2 else game.player1
 
