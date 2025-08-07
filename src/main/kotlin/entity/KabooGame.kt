@@ -19,16 +19,47 @@ data class KabooGame (
 )
 
 {
-    var state:  GamePhase? = null
-    var selected : MutableList<Card> = mutableListOf()
+    /**
+     * The current phase of the game (e.g., DRAW, DISCARD, etc.).
+     */
+    var state: GamePhase? = null
+
+    /**
+     * List of currently selected cards (used during actions like swapping or revealing).
+     */
+    var selected: MutableList<Card> = mutableListOf()
+
+    /**
+     * Stack of cards available to be drawn by players.
+     */
     var drawPile: Stack<Card> = Stack()
+
+    /**
+     * Stack of cards discarded by players.
+     */
     var playStack: Stack<Card> = Stack()
+
+    /**
+     * Indicates whether the last round of the game has started.
+     * This is triggered after a knock action.
+     */
     var lastRound: Boolean = false
+
+    /**
+     * A chronological log of actions and events during the game.
+     * Each entry is a string describing an action.
+     */
     val log: MutableList<String> = mutableListOf()
-    var isKnockRound: Boolean = false
+
+    /**
+     * Index of the player who initiated the knock (0 or 1).
+     * Used to determine when the game should end.
+     */
     var knockInitiatorIndex: Int = -1
-    var knockTurnsRemaining: Int = 0
+
+    /**
+     * Flag indicating whether players should currently reveal their starting cards.
+     */
     var showStartingCards: Boolean = false
 }
-
 

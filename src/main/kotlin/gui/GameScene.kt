@@ -662,7 +662,22 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         clickedHandCard = null
         initialLogLabel(loglabel, game.log.lastOrNull() ?: "")
     }
-
+    /**
+     * Updates the GUI state after the player has selected one or more cards during a power card action.
+     *
+     * This method enables or disables the confirm button (`confirmPowerButton`) depending on:
+     * - The current game phase (e.g., playing Queen, Jack, 7–10).
+     * - The number and validity of the selected cards.
+     *
+     * It uses helper methods to check whether the selected cards meet the requirements
+     * for the current power card effect:
+     * - Queen/Jack: one card must belong to the current player, the other to the opponent.
+     * - 7/8: one card from the current player's own hand.
+     * - 9/10: one card from the opponent's hand.
+     *
+     * The latest log entry is also displayed in the log label.
+     * If no game is active, the method exits without doing anything.
+     */
     override fun refreshAfterSelect() {
         val game = rootService.currentGame ?: return
         confirmPowerButton.isDisabled = when (game.state) {
@@ -679,7 +694,18 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         }
         initialLogLabel(loglabel, game.log.lastOrNull() ?: "")
     }
-
+    /**
+     * Checks if the current selection of two cards is valid for playing a Queen or Jack.
+     *
+     * A valid selection must consist of:
+     * - One card from the current player's hand, and
+     * - One card from the opponent's hand.
+     *
+     * The order of selection does not matter.
+     *
+     * @param game The current Kaboo game instance.
+     * @return True if one selected card belongs to the player and the other to the opponent.
+     */
     private fun isValidQueenJackSelection(game: KabooGame): Boolean {
         val player = if (game.currentPlayer == 0) game.player1 else game.player2
         val opponent = if (game.currentPlayer == 0) game.player2 else game.player1
@@ -688,12 +714,24 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         return (player.hand.flatten().contains(first) && opponent.hand.flatten().contains(second)) ||
                 (player.hand.flatten().contains(second) && opponent.hand.flatten().contains(first))
     }
-
+    /**
+     * Checks whether the specified card belongs to the current player's hand.
+     *
+     * @param game The current Kaboo game instance.
+     * @param card The card to check.
+     * @return True if the card is in the current player's hand.
+     */
     private fun isOwnCard(game: KabooGame, card: Card): Boolean {
         val player = if (game.currentPlayer == 0) game.player1 else game.player2
         return player.hand.flatten().contains(card)
     }
-
+    /**
+     * Checks whether the specified card belongs to the opponent's hand.
+     *
+     * @param game The current Kaboo game instance.
+     * @param card The card to check.
+     * @return True if the card is in the opponent's hand.
+     */
     private fun isOpponentCard(game: KabooGame, card: Card): Boolean {
         val opponent = if (game.currentPlayer == 0) game.player2 else game.player1
         return opponent.hand.flatten().contains(card)
@@ -733,7 +771,17 @@ class GameScene(private val rootService: RootService) : BoardGameScene(1920, 108
         selectedHandCard = null
         clickedHandCard = null
     }
-
+    /**
+     * Updates the GUI after a power card has been played.
+     *
+     * This method refreshes the card grid views for both players using the current game state.
+     * It ensures that all non-null cards in the players' hands are displayed correctly,
+     * reflecting any visibility or changes caused by the played power card.
+     *
+     * Additionally, the latest entry from the game log is shown in the log label.
+     *
+     * If no game is currently active, the method returns immediately without updating the UI.
+     */
     override fun refreshAfterPlayPower() {
         val game = rootService.currentGame ?: return
         val loader = CardImageLoader()
