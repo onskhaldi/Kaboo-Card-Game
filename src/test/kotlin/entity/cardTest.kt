@@ -19,7 +19,7 @@ class CardTest {
         assertEquals(CardSuit.HEARTS, card.suit)
         assertEquals(CardValue.SEVEN, card.value)
         assertTrue(card.isPowercard)
-        assertEquals("♥7", card.toString())
+        assertEquals("7 of ♥", card.toString())
     }
 
 

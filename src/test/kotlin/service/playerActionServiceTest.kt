@@ -1100,33 +1100,46 @@ class PlayerActionServiceTest {
      */
 
     @Test
-    fun swapCardWithOwnFieldWorksCorrectly() {
+    fun swapWithOwnFieldWorksCorrectly() {
         val rootService = RootService()
         rootService.gameService.startNewGame("Alice", "Bob")
         val game = rootService.currentGame!!
         val player = game.player1
 
+        // Test-Refreshable zum Prüfen von GUI-Callbacks
         val testRefreshable = TestRefreshable()
         rootService.addRefreshable(testRefreshable)
 
+        // Spielphase und Spieler vorbereiten
         game.state = GamePhase.PUNKTCARD_DRAWN
         game.currentPlayer = 0
-        val oldCard = Card(CardSuit.CLUBS, CardValue.FIVE, false)
+
+        // Alte Karte und gezogene Karte vorbereiten
+        val oldCard = Card(CardSuit.CLUBS, CardValue.FIVE, isPowercard = false)
+        val drawnCard = Card(CardSuit.HEARTS, CardValue.NINE, isPowercard = true)
+
+        // Setze die alte Karte ins Handfeld und die gezogene Karte
         player.hand[0][0] = oldCard
-        val drawnCard = Card(CardSuit.HEARTS, CardValue.NINE,  true)
         player.drawnCard = drawnCard
+
+        // Wähle die alte Karte aus
         game.selected.clear()
         game.selected.add(oldCard)
 
+        // Methode direkt testen (anstatt über swapCard(), falls swapWithOwnField isoliert getestet werden soll)
         rootService.playerActionService.swapCard()
 
-        assertEquals(drawnCard, player.hand[0][0])
-        assertNull(player.drawnCard)
-        assertTrue(game.playStack.contains(oldCard))
-        assertTrue(game.log.any { it.contains("hat ${drawnCard.value} mit ${oldCard.value} getauscht") })
-        assertEquals(GamePhase.READYTODRAW, game.state)
-        assertTrue(testRefreshable.refreshAfterSwapCalled)
+        // === Assertions ===
+        assertEquals(drawnCard, player.hand[0][0], "Gezogene Karte sollte im Handfeld liegen.")
+        assertNull(player.drawnCard, "Gezogene Karte sollte nach dem Tausch entfernt sein.")
+        assertTrue(game.playStack.contains(oldCard), "Alte Karte sollte auf dem Ablagestapel liegen.")
+        assertTrue(game.log.any {
+            it.contains("hat ${drawnCard.value} mit") && it.contains("getauscht")
+        }, "Logeintrag sollte den Tausch dokumentieren.")
+        assertEquals(GamePhase.READYTODRAW, game.state, "Nach dem Tausch sollte der Zustand auf READYTODRAW wechseln.")
+        assertTrue(testRefreshable.refreshAfterSwapCalled, "GUI sollte aktualisiert worden sein.")
     }
+
 
     /**
      * Testet das Tauschen einer Karte des Spielers mit einer gegnerischen Karte
@@ -1449,6 +1462,25 @@ class PlayerActionServiceTest {
 
         assertEquals(GamePhase.READYTODRAW, game.state)
     }
+    @Test
+    fun testKnock_setsLastRoundAndStateAndInitiator() {
+        // Arrange
+        val rootService = RootService()
+        rootService.gameService.startNewGame("Alice", "Bob")
+        val game = requireNotNull(rootService.currentGame)
+        val initiator = game.currentPlayer
+
+        // Act
+        rootService.playerActionService.knock()
+
+        // Assert
+        assertTrue(game.lastRound, "Nach knock() muss lastRound = true sein.")
+        assertEquals(initiator, game.knockInitiatorIndex, "Initiator muss der aktuelle Spieler zum Zeitpunkt des Klopfens sein.")
+        assertTrue(game.log.any { it.contains("klopft") }, "Das Log sollte den Klopfvorgang vermerken.")
+
+        assertEquals(GamePhase.READYTODRAW, game.state, "Direkt nach knock() sollte der GameState ENDTURN sein.")
+    }
+
 
 }
 

@@ -653,23 +653,7 @@ class GameServiceTest {
      * Erwartetes Verhalten:
      * - Die Variable `lastRound` wird auf `true` gesetzt, um die letzte Runde einzuleiten.
      */
-    @Test
-    fun testKnock_setsLastRoundAndStateAndInitiator() {
-        // Arrange
-        val rootService = RootService()
-        rootService.gameService.startNewGame("Alice", "Bob")
-        val game = requireNotNull(rootService.currentGame)
-        val initiator = game.currentPlayer
 
-        // Act
-        rootService.playerActionService.knock()
-
-        // Assert
-        assertTrue(game.lastRound, "Nach knock() muss lastRound = true sein.")
-        assertEquals(GamePhase.READYTODRAW, game.state, "Nach knock() muss der State READYTODRAW sein.")
-        assertEquals(initiator, game.knockInitiatorIndex, "Initiator muss der aktuelle Spieler zum Zeitpunkt des Klopfens sein.")
-        assertTrue(game.log.last().contains("klopft"), "Das Log sollte den Klopfvorgang vermerken.")
-    }
 
     /**
      * Testet, ob `gameOver()` eine Exception wirft, wenn das Spiel sich nicht im Zustand `ENDTURN` befindet.
@@ -809,15 +793,17 @@ class GameServiceTest {
             player1 = player,
             player2 = Player("Bob"),
             currentPlayer = 0,
-
-            )
+        )
         game.state = GamePhase.PUNKTCARD_DRAWN
         rootService.currentGame = game
 
-        assertThrows<NullPointerException> {
+        val exception = assertThrows<IllegalArgumentException> {
             gameService.discardCard()
         }
+
+        assertEquals("Keine gezogene Karte zum Ablegen vorhanden.", exception.message)
     }
+
     /**
      * Testet, ob ein `IllegalArgumentException` geworfen wird, wenn `discardCard()` in einem
      * ungültigen Spielzustand (`GamePhase.READYTODRAW`) aufgerufen wird.
