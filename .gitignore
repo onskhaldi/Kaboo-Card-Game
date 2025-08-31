@@ -1,4 +1,21 @@
-/build/
-/.idea/
-/.gradle/
+# IntelliJ project files
+.idea/
+*.iml
+
+# Gradle files
+.gradle/
+build/
+out/
+
+# Logs
+*.log
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Sensitive config
+gradle.properties
+
+# Optional
 /public/
