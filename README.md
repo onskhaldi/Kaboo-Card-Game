@@ -1,3 +1,5 @@
+<img width="259" height="195" alt="Screenshot 2026-04-24 at 5 48 41 PM" src="https://github.com/user-attachments/assets/9e039393-4757-442b-87e9-932996130413" />
+
 How to Play Kaboo: The Card Game
 Kaboo is a strategic 2-player card game played with a standard 52-card deck. The goal is to manage your grid of cards in such a way that you end up with the lowest possible score by the end of the game.
 
@@ -12,10 +14,13 @@ The remaining cards are placed in a draw pile.
 
 A discard pile will also be created during play as cards are discarded.
 
+<img width="1270" height="711" alt="Screenshot 2026-04-24 at 5 48 55 PM" src="https://github.com/user-attachments/assets/c1553e2a-ecc2-406e-98f2-791568b0f5f3" />
 
 
 Objective:
 The objective of the game is to have the lowest total score in your 2×2 grid by the end of the game.
+
+<img width="1270" height="710" alt="Screenshot 2026-04-24 at 5 50 29 PM" src="https://github.com/user-attachments/assets/3442f0e8-2fb1-4598-8321-746899efcb08" />
 
 Turn Actions:
 On their turn, a player can choose one of the following actions:
@@ -40,6 +45,7 @@ Draw from the discard pile:
 You can choose to draw from the discard pile and swap the card with one of your grid cards.
 
 
+<img width="913" height="509" alt="Screenshot 2026-04-24 at 5 49 17 PM" src="https://github.com/user-attachments/assets/58388652-8c1f-48bd-8ff7-17941005eeba" />
 
 
 Knock:
