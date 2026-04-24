@@ -4,6 +4,7 @@ How to Play Kaboo: The Card Game
 Kaboo is a strategic 2-player card game played with a standard 52-card deck. The goal is to manage your grid of cards in such a way that you end up with the lowest possible score by the end of the game.
 
 Setup:
+<img width="1270" height="711" alt="Screenshot 2026-04-24 at 5 48 55 PM" src="https://github.com/user-attachments/assets/c1553e2a-ecc2-406e-98f2-791568b0f5f3" />
 
 
 Each player begins with a 2×2 grid of face-down cards (4 cards per player).
@@ -14,13 +15,12 @@ The remaining cards are placed in a draw pile.
 
 A discard pile will also be created during play as cards are discarded.
 
-<img width="1270" height="711" alt="Screenshot 2026-04-24 at 5 48 55 PM" src="https://github.com/user-attachments/assets/c1553e2a-ecc2-406e-98f2-791568b0f5f3" />
-
 
 Objective:
 The objective of the game is to have the lowest total score in your 2×2 grid by the end of the game.
 
-<img width="1270" height="710" alt="Screenshot 2026-04-24 at 5 50 29 PM" src="https://github.com/user-attachments/assets/3442f0e8-2fb1-4598-8321-746899efcb08" />
+<img width="194" height="193" alt="Screenshot 2026-04-24 at 6 00 49 PM" src="https://github.com/user-attachments/assets/2d05f731-6718-43a2-8a85-0caaa04acf60" />
+
 
 Turn Actions:
 On their turn, a player can choose one of the following actions:
@@ -28,14 +28,19 @@ On their turn, a player can choose one of the following actions:
 
 Draw from the deck:
 
+<img width="939" height="532" alt="draw" src="https://github.com/user-attachments/assets/e19cd6c1-bd71-467f-a51b-66058d90d93d" />
 
-If the card drawn is a normal card (2-6, or 10-King):
+If the card drawn is a normal card (2-6, or King):
 You must either swap it with one of your cards in the grid or discard it.
 
 
-If the card is a power card (7, 8, Jack, or Queen):
+If the card is a power card (7, 8, 10, Jack, or Queen):
 You can choose to either use its effect or swap/discard it.
 
+<img width="940" height="530" alt="Screenshot 2026-04-24 at 5 58 30 PM" src="https://github.com/user-attachments/assets/64f0e65d-fb91-49cf-b06c-fbf1cfe09445" />
+
+<img width="941" height="532" alt="Screenshot 2026-04-24 at 5 58 54 PM" src="https://github.com/user-attachments/assets/ff32130c-c291-4d11-bcb8-da78e74b60ee" />
+<img width="942" height="532" alt="Screenshot 2026-04-24 at 5 59 22 PM" src="https://github.com/user-attachments/assets/fffc33e9-bc7a-487d-b6d7-e81922e51be4" />
 
 
 
@@ -45,11 +50,12 @@ Draw from the discard pile:
 You can choose to draw from the discard pile and swap the card with one of your grid cards.
 
 
-<img width="913" height="509" alt="Screenshot 2026-04-24 at 5 49 17 PM" src="https://github.com/user-attachments/assets/58388652-8c1f-48bd-8ff7-17941005eeba" />
+
 
 
 Knock:
 
+<img width="939" height="529" alt="knok" src="https://github.com/user-attachments/assets/1c8de88f-8b07-487a-ade6-99f072e7302f" />
 
 End the round immediately. All other players get one final turn before the scoring phase begins.
 
@@ -128,6 +134,3 @@ UI: GUI logic for an engaging and interactive experience.
 
 
 With this tech stack, Kaboo is designed to provide a smooth, dynamic experience for players, all while ensuring stability and ease of use.
-<img width="389" height="618" alt="Screenshot 2026-04-24 at 5 45 27 PM" src="https://github.com/user-attachments/assets/203332b2-d0c6-412c-89da-1bb17703cf57" />
-
-<img width="378" height="218" alt="Screenshot 2026-04-24 at 5 45 45 PM" src="https://github.com/user-attachments/assets/fc902735-6040-41db-a967-952c0300c176" />
